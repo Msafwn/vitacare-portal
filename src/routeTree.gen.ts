@@ -13,10 +13,15 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as AboutRouteImport } from './routes/about'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
+import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as FindDonorsRouteImport } from './routes/find-donors'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as NotificationsRouteImport } from './routes/notifications'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as DonorsDonorIdRouteImport } from './routes/donors.$donorId'
+import { Route as RequestsIndexRouteImport } from './routes/requests.index'
+import { Route as RequestsRequestIdRouteImport } from './routes/requests.$requestId'
+import { Route as RequestsNewRouteImport } from './routes/requests.new'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -38,6 +43,11 @@ const DashboardRoute = DashboardRouteImport.update({
   path: '/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const DonationsRoute = DonationsRouteImport.update({
+  id: '/donations',
+  path: '/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const FindDonorsRoute = FindDonorsRouteImport.update({
   id: '/find-donors',
   path: '/find-donors',
@@ -46,6 +56,11 @@ const FindDonorsRoute = FindDonorsRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NotificationsRoute = NotificationsRouteImport.update({
+  id: '/notifications',
+  path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
 const RegisterRoute = RegisterRouteImport.update({
@@ -58,26 +73,51 @@ const DonorsDonorIdRoute = DonorsDonorIdRouteImport.update({
   path: '/donors/$donorId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const RequestsIndexRoute = RequestsIndexRouteImport.update({
+  id: '/requests/',
+  path: '/requests/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestsRequestIdRoute = RequestsRequestIdRouteImport.update({
+  id: '/requests/$requestId',
+  path: '/requests/$requestId',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestsNewRoute = RequestsNewRouteImport.update({
+  id: '/requests/new',
+  path: '/requests/new',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/donations': typeof DonationsRoute
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
+  '/requests/$requestId': typeof RequestsRequestIdRoute
+  '/requests/new': typeof RequestsNewRoute
+  '/requests/': typeof RequestsIndexRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/donations': typeof DonationsRoute
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
+  '/requests/$requestId': typeof RequestsRequestIdRoute
+  '/requests/new': typeof RequestsNewRoute
+  '/requests': typeof RequestsIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -85,10 +125,15 @@ export interface FileRoutesById {
   '/about': typeof AboutRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
+  '/donations': typeof DonationsRoute
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
+  '/notifications': typeof NotificationsRoute
   '/register': typeof RegisterRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
+  '/requests/$requestId': typeof RequestsRequestIdRoute
+  '/requests/new': typeof RequestsNewRoute
+  '/requests/': typeof RequestsIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -97,30 +142,45 @@ export interface FileRouteTypes {
     | '/about'
     | '/contact'
     | '/dashboard'
+    | '/donations'
     | '/find-donors'
     | '/login'
+    | '/notifications'
     | '/register'
     | '/donors/$donorId'
+    | '/requests/$requestId'
+    | '/requests/new'
+    | '/requests/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
     | '/about'
     | '/contact'
     | '/dashboard'
+    | '/donations'
     | '/find-donors'
     | '/login'
+    | '/notifications'
     | '/register'
     | '/donors/$donorId'
+    | '/requests/$requestId'
+    | '/requests/new'
+    | '/requests'
   id:
     | '__root__'
     | '/'
     | '/about'
     | '/contact'
     | '/dashboard'
+    | '/donations'
     | '/find-donors'
     | '/login'
+    | '/notifications'
     | '/register'
     | '/donors/$donorId'
+    | '/requests/$requestId'
+    | '/requests/new'
+    | '/requests/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -128,10 +188,15 @@ export interface RootRouteChildren {
   AboutRoute: typeof AboutRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
+  DonationsRoute: typeof DonationsRoute
   FindDonorsRoute: typeof FindDonorsRoute
   LoginRoute: typeof LoginRoute
+  NotificationsRoute: typeof NotificationsRoute
   RegisterRoute: typeof RegisterRoute
   DonorsDonorIdRoute: typeof DonorsDonorIdRoute
+  RequestsRequestIdRoute: typeof RequestsRequestIdRoute
+  RequestsNewRoute: typeof RequestsNewRoute
+  RequestsIndexRoute: typeof RequestsIndexRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -164,6 +229,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/donations': {
+      id: '/donations'
+      path: '/donations'
+      fullPath: '/donations'
+      preLoaderRoute: typeof DonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/find-donors': {
       id: '/find-donors'
       path: '/find-donors'
@@ -176,6 +248,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/notifications': {
+      id: '/notifications'
+      path: '/notifications'
+      fullPath: '/notifications'
+      preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/register': {
@@ -192,6 +271,27 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DonorsDonorIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/requests/': {
+      id: '/requests/'
+      path: '/requests'
+      fullPath: '/requests/'
+      preLoaderRoute: typeof RequestsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/requests/$requestId': {
+      id: '/requests/$requestId'
+      path: '/requests/$requestId'
+      fullPath: '/requests/$requestId'
+      preLoaderRoute: typeof RequestsRequestIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/requests/new': {
+      id: '/requests/new'
+      path: '/requests/new'
+      fullPath: '/requests/new'
+      preLoaderRoute: typeof RequestsNewRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -200,10 +300,15 @@ const rootRouteChildren: RootRouteChildren = {
   AboutRoute: AboutRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
+  DonationsRoute: DonationsRoute,
   FindDonorsRoute: FindDonorsRoute,
   LoginRoute: LoginRoute,
+  NotificationsRoute: NotificationsRoute,
   RegisterRoute: RegisterRoute,
   DonorsDonorIdRoute: DonorsDonorIdRoute,
+  RequestsRequestIdRoute: RequestsRequestIdRoute,
+  RequestsNewRoute: RequestsNewRoute,
+  RequestsIndexRoute: RequestsIndexRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
