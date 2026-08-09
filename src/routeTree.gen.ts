@@ -21,7 +21,12 @@ import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as SettingsRouteImport } from './routes/settings'
 import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
+import { Route as AdminDonorsRouteImport } from './routes/admin.donors'
+import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
+import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as DonorsDonorIdRouteImport } from './routes/donors.$donorId'
 import { Route as RequestsIndexRouteImport } from './routes/requests.index'
 import { Route as RequestsRequestIdRouteImport } from './routes/requests.$requestId'
@@ -87,9 +92,34 @@ const AdminDashboardRoute = AdminDashboardRouteImport.update({
   path: '/admin/dashboard',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminDonationsRoute = AdminDonationsRouteImport.update({
+  id: '/admin/donations',
+  path: '/admin/donations',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDonorsRoute = AdminDonorsRouteImport.update({
+  id: '/admin/donors',
+  path: '/admin/donors',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminInventoryRoute = AdminInventoryRouteImport.update({
+  id: '/admin/inventory',
+  path: '/admin/inventory',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminLoginRoute = AdminLoginRouteImport.update({
   id: '/admin/login',
   path: '/admin/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminRequestsRoute = AdminRequestsRouteImport.update({
+  id: '/admin/requests',
+  path: '/admin/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminUsersRoute = AdminUsersRouteImport.update({
+  id: '/admin/users',
+  path: '/admin/users',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonorsDonorIdRoute = DonorsDonorIdRouteImport.update({
@@ -126,7 +156,12 @@ export interface FileRoutesByFullPath {
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/donations': typeof AdminDonationsRoute
+  '/admin/donors': typeof AdminDonorsRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -145,7 +180,12 @@ export interface FileRoutesByTo {
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/donations': typeof AdminDonationsRoute
+  '/admin/donors': typeof AdminDonorsRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -165,7 +205,12 @@ export interface FileRoutesById {
   '/register': typeof RegisterRoute
   '/settings': typeof SettingsRoute
   '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/donations': typeof AdminDonationsRoute
+  '/admin/donors': typeof AdminDonorsRoute
+  '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/requests': typeof AdminRequestsRoute
+  '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -186,7 +231,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/admin/dashboard'
+    | '/admin/donations'
+    | '/admin/donors'
+    | '/admin/inventory'
     | '/admin/login'
+    | '/admin/requests'
+    | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -205,7 +255,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/admin/dashboard'
+    | '/admin/donations'
+    | '/admin/donors'
+    | '/admin/inventory'
     | '/admin/login'
+    | '/admin/requests'
+    | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -224,7 +279,12 @@ export interface FileRouteTypes {
     | '/register'
     | '/settings'
     | '/admin/dashboard'
+    | '/admin/donations'
+    | '/admin/donors'
+    | '/admin/inventory'
     | '/admin/login'
+    | '/admin/requests'
+    | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -244,7 +304,12 @@ export interface RootRouteChildren {
   RegisterRoute: typeof RegisterRoute
   SettingsRoute: typeof SettingsRoute
   AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminDonationsRoute: typeof AdminDonationsRoute
+  AdminDonorsRoute: typeof AdminDonorsRoute
+  AdminInventoryRoute: typeof AdminInventoryRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminRequestsRoute: typeof AdminRequestsRoute
+  AdminUsersRoute: typeof AdminUsersRoute
   DonorsDonorIdRoute: typeof DonorsDonorIdRoute
   RequestsRequestIdRoute: typeof RequestsRequestIdRoute
   RequestsNewRoute: typeof RequestsNewRoute
@@ -337,11 +402,46 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminDashboardRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/donations': {
+      id: '/admin/donations'
+      path: '/admin/donations'
+      fullPath: '/admin/donations'
+      preLoaderRoute: typeof AdminDonationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/donors': {
+      id: '/admin/donors'
+      path: '/admin/donors'
+      fullPath: '/admin/donors'
+      preLoaderRoute: typeof AdminDonorsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/inventory': {
+      id: '/admin/inventory'
+      path: '/admin/inventory'
+      fullPath: '/admin/inventory'
+      preLoaderRoute: typeof AdminInventoryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/login': {
       id: '/admin/login'
       path: '/admin/login'
       fullPath: '/admin/login'
       preLoaderRoute: typeof AdminLoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/requests': {
+      id: '/admin/requests'
+      path: '/admin/requests'
+      fullPath: '/admin/requests'
+      preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/users': {
+      id: '/admin/users'
+      path: '/admin/users'
+      fullPath: '/admin/users'
+      preLoaderRoute: typeof AdminUsersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donors/$donorId': {
@@ -388,7 +488,12 @@ const rootRouteChildren: RootRouteChildren = {
   RegisterRoute: RegisterRoute,
   SettingsRoute: SettingsRoute,
   AdminDashboardRoute: AdminDashboardRoute,
+  AdminDonationsRoute: AdminDonationsRoute,
+  AdminDonorsRoute: AdminDonorsRoute,
+  AdminInventoryRoute: AdminInventoryRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminRequestsRoute: AdminRequestsRoute,
+  AdminUsersRoute: AdminUsersRoute,
   DonorsDonorIdRoute: DonorsDonorIdRoute,
   RequestsRequestIdRoute: RequestsRequestIdRoute,
   RequestsNewRoute: RequestsNewRoute,
