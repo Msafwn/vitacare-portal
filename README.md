@@ -1,14 +1,178 @@
-# Welcome to your Lovable project
+# VitaCare Portal
+
+Build a modern, minimal, attractive and professional Blood Donation Management System frontend.
+React js
+js
+
+Tailwind CSS
+
+React Router
+Primary color: Deep Red #DC2626
+
+Secondary red: #EF4444
+
+Background: #F8FAFC
+
+Cards: #FFFFFF
+
+Main text: #1F2937
+
+Secondary text: #64748B
+
+Success: #16A34A
+
+Warning: #F59E0B
+
+Error: #DC2626
+
+Font: Inter
+
+Border radius: 12px–16px
+
+Very subtle shadows
+
+Clean borders
+
+Generous whitespace
+
+Professional healthcare SaaS aesthetic
+
+DESIGN PRINCIPLES:
+
+Minimal and modern
+
+Attractive but not flashy
+
+Professional healthcare appearance
+
+Clear visual hierarchy
+
+Easy navigation
+
+Accessible contrast
+
+Consistent spacing
+
+Responsive on desktop, tablet and mobile
+
+Avoid excessive gradients
+
+Avoid excessive animations
+
+Avoid unnecessary decorative elements
+
+CREATE THESE REUSABLE COMPONENTS:
+
+Navbar
+
+Sidebar
+
+Footer
+
+Button
+
+Input
+
+Select
+
+Search bar
+
+Modal
+
+Card
+
+Status badge
+
+Avatar
+
+Dropdown
+
+Table
+
+Pagination
+
+Loading skeleton
+
+Empty state
+
+Toast notification
+
+CREATE TWO MAIN LAYOUTS:
+
+USER LAYOUT:
+
+Top navbar
+
+Responsive sidebar
+
+Main content area
+
+ADMIN LAYOUT:
+
+Admin sidebar
+
+Admin top navbar
+
+Main content area
+
+userside
+Home
+about contact us
+
+ Login/Register
+
+ User Dashboard
+
+ Find Donors
+
+ Donor Details
+
+ Create Blood Request
+
+ My Requests
+
+ Request Details
+
+ Donation History
+
+ Notifications
+
+ Profile
+
+ Settings
+
+Admin side
+Admin Login
+
+ Admin Dashboard
+
+ Users
+
+ Donors
+
+ Blood Requests
+
+ Donations
+
+ Blood Inventory
+
+ Reports
+
+ Notifications
+
+ Settings
+
+or easy create kar na ha pure project baad ma backend laga na easy hu or abi sirf or sirf forntend bana ha js react js ma only
 
 This project was built with [Lovable](https://lovable.dev).
 
 ## Build with Lovable
 
-Open your project in the [Lovable editor](https://lovable.dev) and keep building.
+Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6a592f05-d16f-40f0-b651-601e0e6aa56e).
 
 - **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: connect the project to GitHub and every change made in Lovable is committed straight to your repository.
-- **Full ownership**: this code is yours. Push to your repository and your changes sync back into Lovable, ready for your next prompt.
+- **Stay in sync**: every change made in Lovable is committed straight to this repository.
+- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
@@ -20,10 +184,3 @@ cd <repository-name>
 npm i
 npm run dev
 ```
-
-## Built with
-
-- TanStack Start
-- TypeScript
-- React
-- Tailwind CSS
