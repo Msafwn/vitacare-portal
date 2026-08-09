@@ -25,7 +25,10 @@ import { Route as AdminDonationsRouteImport } from './routes/admin.donations'
 import { Route as AdminDonorsRouteImport } from './routes/admin.donors'
 import { Route as AdminInventoryRouteImport } from './routes/admin.inventory'
 import { Route as AdminLoginRouteImport } from './routes/admin.login'
+import { Route as AdminNotificationsRouteImport } from './routes/admin.notifications'
+import { Route as AdminReportsRouteImport } from './routes/admin.reports'
 import { Route as AdminRequestsRouteImport } from './routes/admin.requests'
+import { Route as AdminSettingsRouteImport } from './routes/admin.settings'
 import { Route as AdminUsersRouteImport } from './routes/admin.users'
 import { Route as DonorsDonorIdRouteImport } from './routes/donors.$donorId'
 import { Route as RequestsIndexRouteImport } from './routes/requests.index'
@@ -112,9 +115,24 @@ const AdminLoginRoute = AdminLoginRouteImport.update({
   path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminNotificationsRoute = AdminNotificationsRouteImport.update({
+  id: '/admin/notifications',
+  path: '/admin/notifications',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminRequestsRoute = AdminRequestsRouteImport.update({
   id: '/admin/requests',
   path: '/admin/requests',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminSettingsRoute = AdminSettingsRouteImport.update({
+  id: '/admin/settings',
+  path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AdminUsersRoute = AdminUsersRouteImport.update({
@@ -160,7 +178,10 @@ export interface FileRoutesByFullPath {
   '/admin/donors': typeof AdminDonorsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/requests': typeof AdminRequestsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
@@ -184,7 +205,10 @@ export interface FileRoutesByTo {
   '/admin/donors': typeof AdminDonorsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/requests': typeof AdminRequestsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
@@ -209,7 +233,10 @@ export interface FileRoutesById {
   '/admin/donors': typeof AdminDonorsRoute
   '/admin/inventory': typeof AdminInventoryRoute
   '/admin/login': typeof AdminLoginRoute
+  '/admin/notifications': typeof AdminNotificationsRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/requests': typeof AdminRequestsRoute
+  '/admin/settings': typeof AdminSettingsRoute
   '/admin/users': typeof AdminUsersRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
@@ -235,7 +262,10 @@ export interface FileRouteTypes {
     | '/admin/donors'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/reports'
     | '/admin/requests'
+    | '/admin/settings'
     | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
@@ -259,7 +289,10 @@ export interface FileRouteTypes {
     | '/admin/donors'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/reports'
     | '/admin/requests'
+    | '/admin/settings'
     | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
@@ -283,7 +316,10 @@ export interface FileRouteTypes {
     | '/admin/donors'
     | '/admin/inventory'
     | '/admin/login'
+    | '/admin/notifications'
+    | '/admin/reports'
     | '/admin/requests'
+    | '/admin/settings'
     | '/admin/users'
     | '/donors/$donorId'
     | '/requests/$requestId'
@@ -308,7 +344,10 @@ export interface RootRouteChildren {
   AdminDonorsRoute: typeof AdminDonorsRoute
   AdminInventoryRoute: typeof AdminInventoryRoute
   AdminLoginRoute: typeof AdminLoginRoute
+  AdminNotificationsRoute: typeof AdminNotificationsRoute
+  AdminReportsRoute: typeof AdminReportsRoute
   AdminRequestsRoute: typeof AdminRequestsRoute
+  AdminSettingsRoute: typeof AdminSettingsRoute
   AdminUsersRoute: typeof AdminUsersRoute
   DonorsDonorIdRoute: typeof DonorsDonorIdRoute
   RequestsRequestIdRoute: typeof RequestsRequestIdRoute
@@ -430,11 +469,32 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/notifications': {
+      id: '/admin/notifications'
+      path: '/admin/notifications'
+      fullPath: '/admin/notifications'
+      preLoaderRoute: typeof AdminNotificationsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/requests': {
       id: '/admin/requests'
       path: '/admin/requests'
       fullPath: '/admin/requests'
       preLoaderRoute: typeof AdminRequestsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/settings': {
+      id: '/admin/settings'
+      path: '/admin/settings'
+      fullPath: '/admin/settings'
+      preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/admin/users': {
@@ -492,7 +552,10 @@ const rootRouteChildren: RootRouteChildren = {
   AdminDonorsRoute: AdminDonorsRoute,
   AdminInventoryRoute: AdminInventoryRoute,
   AdminLoginRoute: AdminLoginRoute,
+  AdminNotificationsRoute: AdminNotificationsRoute,
+  AdminReportsRoute: AdminReportsRoute,
   AdminRequestsRoute: AdminRequestsRoute,
+  AdminSettingsRoute: AdminSettingsRoute,
   AdminUsersRoute: AdminUsersRoute,
   DonorsDonorIdRoute: DonorsDonorIdRoute,
   RequestsRequestIdRoute: RequestsRequestIdRoute,
