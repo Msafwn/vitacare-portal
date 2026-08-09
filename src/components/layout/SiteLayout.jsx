@@ -11,7 +11,7 @@ const links = [
 export default function SiteLayout({ children }) {
   return (
     <div className="flex min-h-screen flex-col bg-background">
-      <Navbar links={links} showSearch={false} />
+      <Navbar links={links} showSearch={false} guest />
       <main className="flex-1">{children}</main>
       <Footer />
     </div>

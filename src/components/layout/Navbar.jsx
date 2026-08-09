@@ -6,7 +6,7 @@ import Dropdown, { DropdownItem, DropdownLabel } from "../blood/Dropdown";
 import SearchBar from "../blood/SearchBar";
 import { currentUser } from "@/data/mock";
 
-export default function Navbar({ onMenu, admin = false, links = [], showSearch = true }) {
+export default function Navbar({ onMenu, admin = false, links = [], showSearch = true, guest = false }) {
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-border bg-card/90 backdrop-blur">
       <div className="mx-auto flex h-full max-w-[1400px] items-center gap-4 px-4 sm:px-6">
@@ -42,6 +42,23 @@ export default function Navbar({ onMenu, admin = false, links = [], showSearch =
         )}
 
         <div className="ml-auto flex items-center gap-2 sm:gap-3">
+          {guest ? (
+            <>
+              <Link
+                to="/login"
+                className="rounded-xl px-3.5 py-2 text-sm font-medium text-foreground transition-colors hover:bg-muted"
+              >
+                Log in
+              </Link>
+              <Link
+                to="/register"
+                className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-2"
+              >
+                Become a donor
+              </Link>
+            </>
+          ) : (
+          <>
           {showSearch && (
             <div className="hidden w-64 xl:block">
               <SearchBar placeholder="Search donors, requests…" />
@@ -82,6 +99,8 @@ export default function Navbar({ onMenu, admin = false, links = [], showSearch =
               </DropdownItem>
             </Link>
           </Dropdown>
+          </>
+          )}
         </div>
       </div>
     </header>
