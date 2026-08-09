@@ -17,7 +17,11 @@ import { Route as DonationsRouteImport } from './routes/donations'
 import { Route as FindDonorsRouteImport } from './routes/find-donors'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as NotificationsRouteImport } from './routes/notifications'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as RegisterRouteImport } from './routes/register'
+import { Route as SettingsRouteImport } from './routes/settings'
+import { Route as AdminDashboardRouteImport } from './routes/admin.dashboard'
+import { Route as AdminLoginRouteImport } from './routes/admin.login'
 import { Route as DonorsDonorIdRouteImport } from './routes/donors.$donorId'
 import { Route as RequestsIndexRouteImport } from './routes/requests.index'
 import { Route as RequestsRequestIdRouteImport } from './routes/requests.$requestId'
@@ -63,9 +67,29 @@ const NotificationsRoute = NotificationsRouteImport.update({
   path: '/notifications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const RegisterRoute = RegisterRouteImport.update({
   id: '/register',
   path: '/register',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const SettingsRoute = SettingsRouteImport.update({
+  id: '/settings',
+  path: '/settings',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminDashboardRoute = AdminDashboardRouteImport.update({
+  id: '/admin/dashboard',
+  path: '/admin/dashboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminLoginRoute = AdminLoginRouteImport.update({
+  id: '/admin/login',
+  path: '/admin/login',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DonorsDonorIdRoute = DonorsDonorIdRouteImport.update({
@@ -98,7 +122,11 @@ export interface FileRoutesByFullPath {
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/settings': typeof SettingsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -113,7 +141,11 @@ export interface FileRoutesByTo {
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/settings': typeof SettingsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -129,7 +161,11 @@ export interface FileRoutesById {
   '/find-donors': typeof FindDonorsRoute
   '/login': typeof LoginRoute
   '/notifications': typeof NotificationsRoute
+  '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
+  '/settings': typeof SettingsRoute
+  '/admin/dashboard': typeof AdminDashboardRoute
+  '/admin/login': typeof AdminLoginRoute
   '/donors/$donorId': typeof DonorsDonorIdRoute
   '/requests/$requestId': typeof RequestsRequestIdRoute
   '/requests/new': typeof RequestsNewRoute
@@ -146,7 +182,11 @@ export interface FileRouteTypes {
     | '/find-donors'
     | '/login'
     | '/notifications'
+    | '/profile'
     | '/register'
+    | '/settings'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -161,7 +201,11 @@ export interface FileRouteTypes {
     | '/find-donors'
     | '/login'
     | '/notifications'
+    | '/profile'
     | '/register'
+    | '/settings'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -176,7 +220,11 @@ export interface FileRouteTypes {
     | '/find-donors'
     | '/login'
     | '/notifications'
+    | '/profile'
     | '/register'
+    | '/settings'
+    | '/admin/dashboard'
+    | '/admin/login'
     | '/donors/$donorId'
     | '/requests/$requestId'
     | '/requests/new'
@@ -192,7 +240,11 @@ export interface RootRouteChildren {
   FindDonorsRoute: typeof FindDonorsRoute
   LoginRoute: typeof LoginRoute
   NotificationsRoute: typeof NotificationsRoute
+  ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
+  SettingsRoute: typeof SettingsRoute
+  AdminDashboardRoute: typeof AdminDashboardRoute
+  AdminLoginRoute: typeof AdminLoginRoute
   DonorsDonorIdRoute: typeof DonorsDonorIdRoute
   RequestsRequestIdRoute: typeof RequestsRequestIdRoute
   RequestsNewRoute: typeof RequestsNewRoute
@@ -257,11 +309,39 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof NotificationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/register': {
       id: '/register'
       path: '/register'
       fullPath: '/register'
       preLoaderRoute: typeof RegisterRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/settings': {
+      id: '/settings'
+      path: '/settings'
+      fullPath: '/settings'
+      preLoaderRoute: typeof SettingsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/dashboard': {
+      id: '/admin/dashboard'
+      path: '/admin/dashboard'
+      fullPath: '/admin/dashboard'
+      preLoaderRoute: typeof AdminDashboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/login': {
+      id: '/admin/login'
+      path: '/admin/login'
+      fullPath: '/admin/login'
+      preLoaderRoute: typeof AdminLoginRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/donors/$donorId': {
@@ -304,7 +384,11 @@ const rootRouteChildren: RootRouteChildren = {
   FindDonorsRoute: FindDonorsRoute,
   LoginRoute: LoginRoute,
   NotificationsRoute: NotificationsRoute,
+  ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
+  SettingsRoute: SettingsRoute,
+  AdminDashboardRoute: AdminDashboardRoute,
+  AdminLoginRoute: AdminLoginRoute,
   DonorsDonorIdRoute: DonorsDonorIdRoute,
   RequestsRequestIdRoute: RequestsRequestIdRoute,
   RequestsNewRoute: RequestsNewRoute,
