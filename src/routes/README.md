@@ -1,21 +1,26 @@
-# Routes
+# Routes Directory
 
-TanStack Start uses **file-based routing**. Every `.tsx` file in this directory
-defines a route. Do **not** create `src/pages/`, `src/routes/_app/index.tsx`, or
-`app/layout.tsx` — those are Next.js / Remix conventions. The only root layout
-is `src/routes/__root.tsx`.
+This project uses **React Router (`react-router-dom`)** for routing. All route configurations are manually defined in the `src/App.jsx` file. We do NOT use file-based routing.
 
-## Conventions
+## Folder Structure
 
-| File | URL |
-| --- | --- |
-| `index.tsx` | `/` |
-| `about.tsx` | `/about` |
-| `users/index.tsx` | `/users` |
-| `users/$id.tsx` | `/users/:id` (dynamic — bare `$`, no curly braces) |
-| `posts/{-$category}.tsx` | `/posts/:category?` (optional segment) |
-| `files/$.tsx` | `/files/*` (splat — read via `_splat` param, never `*`) |
-| `_layout.tsx` | layout route (renders children via `<Outlet />`) |
-| `__root.tsx` | app shell — wraps every page; preserve `<Outlet />` |
+To keep the project organized and maintainable, route components are divided into three main domains:
 
-`routeTree.gen.ts` is auto-generated. Don't edit it by hand.
+### 1. `/public/`
+Contains pages that are accessible to everyone without logging in.
+- Example: `index.jsx`, `login.jsx`, `about.jsx`, etc.
+
+### 2. `/user/`
+Contains pages specific to the user portal (donors/receivers). These routes will eventually be protected by an authentication check.
+- Example: `dashboard.jsx`, `profile.jsx`, `donations.jsx`, etc.
+
+### 3. `/admin/`
+Contains pages specific to the administration panel. These are protected routes meant only for admin staff.
+- Example: `dashboard.jsx`, `users.jsx`, `reports.jsx`, etc.
+
+## How to add a new route?
+
+1. Create your component `.jsx` file in the appropriate folder (`public`, `user`, or `admin`).
+2. Go to `src/App.jsx`.
+3. Import your new component at the top of the file.
+4. Add a new `<Route />` tag inside the `<Routes>` block in `App.jsx`.

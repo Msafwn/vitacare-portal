@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Droplet } from "lucide-react";
 
 export default function Logo({ compact = false }) {

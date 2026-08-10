@@ -1,4 +1,4 @@
-import { Link } from "@tanstack/react-router";
+import { Link } from "react-router-dom";
 import { Bell, LogOut, Menu, Settings, User } from "lucide-react";
 import Logo from "../blood/Logo";
 import Avatar from "../blood/Avatar";

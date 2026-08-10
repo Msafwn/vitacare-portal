@@ -1,10 +1,10 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { Link, useLocation } from "react-router-dom";
 import { X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import Logo from "../blood/Logo";
 
 export default function Sidebar({ items, open, onClose, footer }) {
-  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const { pathname } = useLocation();
 
   const nav = (
     <nav className="flex h-full flex-col gap-1 p-4">

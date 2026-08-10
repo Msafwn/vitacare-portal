@@ -12,7 +12,6 @@ import {
 } from "lucide-react";
 import Navbar from "./Navbar";
 import Sidebar from "./Sidebar";
-import Footer from "./Footer";
 
 const items = [
   { section: "Overview" },
@@ -51,7 +50,6 @@ export default function UserLayout({ children }) {
         />
         <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8">{children}</main>
       </div>
-      <Footer />
     </div>
   );
 }

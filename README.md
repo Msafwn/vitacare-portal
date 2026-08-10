@@ -164,15 +164,7 @@ Admin Login
 
 or easy create kar na ha pure project baad ma backend laga na easy hu or abi sirf or sirf forntend bana ha js react js ma only
 
-This project was built with [Lovable](https://lovable.dev).
 
-## Build with Lovable
-
-Continue developing this project in the [Lovable editor](https://lovable.dev/projects/6a592f05-d16f-40f0-b651-601e0e6aa56e).
-
-- **Ship faster**: describe what you want to build and Lovable handles the code.
-- **Stay in sync**: every change made in Lovable is committed straight to this repository.
-- **Full ownership**: this code is yours. Push to `main` on GitHub and your changes sync back into Lovable, ready for your next prompt.
 
 ## Development
 
