@@ -1,4 +1,5 @@
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
 import { Droplet, FileText, HeartHandshake, Users } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
 import PageHeader from "@/components/blood/PageHeader";
@@ -10,6 +11,7 @@ import EmptyState from "@/components/blood/EmptyState";
 import { currentUser, donors, formatDate, requests } from "@/data/mock";
 
 function Dashboard() {
+  const { isDonor, lastDonationDate } = useSelector(state => state.user);
   const myRequests = requests.slice(0, 3);
   const nearby = donors.filter((d) => d.city === currentUser.city && d.status === "available");
 
@@ -78,19 +80,28 @@ function Dashboard() {
         </Card>
 
         <div className="space-y-6">
-          <Card>
-            <h2 className="text-base font-semibold text-foreground">Donation eligibility</h2>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Last donation {formatDate(currentUser.lastDonation)}
-            </p>
-            <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
-              <div className="h-full w-full rounded-full bg-success" />
-            </div>
-            <p className="mt-3 text-sm font-medium text-success">You are eligible to donate</p>
-            <Button variant="soft" className="mt-4 w-full" as="link" to="/donations">
-              Log a donation
-            </Button>
-          </Card>
+          {isDonor ? (
+            <Card>
+              <h2 className="text-base font-semibold text-foreground">Donation eligibility</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Last donation {lastDonationDate ? formatDate(lastDonationDate) : 'Unknown'}
+              </p>
+              <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-muted">
+                <div className="h-full w-full rounded-full bg-success" />
+              </div>
+              <p className="mt-3 text-sm font-medium text-success">You are eligible to donate</p>
+            </Card>
+          ) : (
+            <Card className="bg-primary-soft border-primary/20">
+              <h2 className="text-base font-semibold text-primary">Become a Donor</h2>
+              <p className="mt-1 text-sm text-foreground/80">
+                Help someone in need by becoming a blood donor today. Your one donation can save up to 3 lives.
+              </p>
+              <Button className="mt-4 w-full" as="link" to="/become-donor">
+                Become a Donor
+              </Button>
+            </Card>
+          )}
 
           <Card>
             <h2 className="text-base font-semibold text-foreground">Donors near you</h2>

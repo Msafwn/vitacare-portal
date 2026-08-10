@@ -5,15 +5,15 @@ import Button from "@/components/blood/Button";
 import Input, { Field } from "@/components/blood/Input";
 import Select from "@/components/blood/Select";
 import { toast } from "@/components/blood/Toast";
-import { BLOOD_GROUPS, CITIES } from "@/data/mock";
+import { CITIES } from "@/data/mock";
 
 function Register() {
   const navigate = useNavigate();
 
   function onSubmit(e) {
     e.preventDefault();
-    toast.success("Account created", { description: "Welcome to the LifeDrop donor network." });
-    navigate({ to: "/dashboard" });
+    toast.success("Account created", { description: "Welcome to LifeDrop." });
+    navigate("/dashboard");
   }
 
   return (
@@ -40,7 +40,7 @@ function Register() {
                 <div className="flex h-9 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
                   <Users className="h-5 w-5" />
                 </div>
-                <span className="text-sm font-medium">10,000+ registered donors across the country</span>
+                <span className="text-sm font-medium">10,000+ registered members</span>
               </div>
               <div className="flex items-center gap-4">
                 <div className="flex h-9 w-10 shrink-0 items-center justify-center rounded-full bg-white/10">
@@ -86,19 +86,8 @@ function Register() {
               <Field label="Phone" required>
                 <Input placeholder="+92 300 0000000" required />
               </Field>
-              <Field label="Date of birth">
-                <Input type="date" />
-              </Field>
-            </div>
-            <div className="grid gap-5 sm:grid-cols-3">
-              <Field label="Blood group" required>
-                <Select options={BLOOD_GROUPS} placeholder="Select" required />
-              </Field>
               <Field label="City" required>
                 <Select options={CITIES} placeholder="Select" required />
-              </Field>
-              <Field label="Account type">
-                <Select options={["Donor", "Recipient", "Both"]} />
               </Field>
             </div>
             <div className="grid gap-5 sm:grid-cols-2">
@@ -115,7 +104,7 @@ function Register() {
                 required
                 className="mt-0.5 h-4 w-4 rounded border-border accent-primary"
               />
-           <span className="text-[10px]">I confirm the information is accurate and agree to the donor safety guidelines.</span>
+              <span className="text-[10px]">I confirm the information is accurate and agree to the Terms & Conditions.</span>
             </label>
             <Button type="submit" className="w-full h-12 text-base font-semibold mt-2">
               Create account

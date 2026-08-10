@@ -4,9 +4,11 @@ import Logo from "../blood/Logo";
 import Avatar from "../blood/Avatar";
 import Dropdown, { DropdownItem, DropdownLabel } from "../blood/Dropdown";
 import SearchBar from "../blood/SearchBar";
+import { useSelector } from "react-redux";
 import { currentUser } from "@/data/mock";
 
 export default function Navbar({ onMenu, admin = false, links = [], showSearch = true, guest = false }) {
+  const { isDonor } = useSelector(state => state.user);
   return (
     <header className="sticky top-0 z-40 h-16 border-b border-border bg-card/90 backdrop-blur">
       <div className="mx-auto flex h-full max-w-[1400px] items-center gap-4 px-4 sm:px-6">
@@ -51,7 +53,7 @@ export default function Navbar({ onMenu, admin = false, links = [], showSearch =
                 Log in
               </Link>
               <Link
-                to="/register"
+                to="/login?redirect=/become-donor"
                 className="rounded-xl bg-primary px-4 py-2 text-sm font-medium text-primary-foreground transition-colors hover:bg-brand-2"
               >
                 Become a donor
@@ -59,6 +61,14 @@ export default function Navbar({ onMenu, admin = false, links = [], showSearch =
             </>
           ) : (
           <>
+          {!admin && !isDonor && (
+             <Link
+                to="/become-donor"
+                className="hidden sm:inline-flex rounded-xl bg-primary/10 text-primary px-4 py-2 text-sm font-semibold transition-colors hover:bg-primary/20"
+             >
+                Become a donor
+             </Link>
+          )}
           {showSearch && (
             <div className="hidden w-64 xl:block">
               <SearchBar placeholder="Search donors, requests…" />

@@ -10,7 +10,9 @@ import Dashboard from "./routes/user/dashboard";
 import Profile from "./routes/user/profile";
 import Notifications from "./routes/user/notifications";
 import FindDonors from "./routes/user/find-donors";
-import Donations from "./routes/user/donations";
+import DonationHistory from "./routes/user/donation-history";
+import DonationDetails from "./routes/user/donation-details";
+import BecomeDonor from "./routes/user/become-donor";
 import DonorsDetails from "./routes/user/donors.$donorId";
 import RequestsIndex from "./routes/user/requests.index";
 import RequestsNew from "./routes/user/requests.new";
@@ -46,7 +48,9 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/notifications" element={<Notifications />} />
         <Route path="/find-donors" element={<FindDonors />} />
-        <Route path="/donations" element={<Donations />} />
+        <Route path="/donation-history" element={<DonationHistory />} />
+        <Route path="/donations/:id" element={<DonationDetails />} />
+        <Route path="/become-donor" element={<BecomeDonor />} />
         <Route path="/donors/:donorId" element={<DonorsDetails />} />
         <Route path="/requests" element={<RequestsIndex />} />
         <Route path="/requests/new" element={<RequestsNew />} />

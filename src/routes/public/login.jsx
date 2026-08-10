@@ -1,5 +1,4 @@
-import { Link } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Users, Heart, ShieldCheck, Mail, Lock, Eye } from "lucide-react";
 import Logo from "@/components/blood/Logo";
 import Button from "@/components/blood/Button";
@@ -8,11 +7,13 @@ import { toast } from "@/components/blood/Toast";
 
 function Login() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
 
   function onSubmit(e) {
     e.preventDefault();
     toast.success("Welcome back!");
-    navigate({ to: "/dashboard" });
+    const redirectUrl = searchParams.get("redirect") || "/dashboard";
+    navigate(redirectUrl);
   }
 
   return (

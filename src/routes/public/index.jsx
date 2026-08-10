@@ -65,7 +65,7 @@ function Home() {
             </div>
 
             <div className="mt-6 flex flex-wrap gap-3">
-              <Button as="link" to="/register" variant="soft">
+              <Button as="link" to="/login?redirect=/become-donor" variant="soft">
                 Become a donor
               </Button>
               <Button as="link" to="/requests/new" variant="secondary">
@@ -138,8 +138,8 @@ function Home() {
             </p>
           </div>
           <div className="flex gap-3">
-            <Button as="link" to="/register">
-              Register as donor
+            <Button as="link" to="/login?redirect=/become-donor">
+              Become a donor
             </Button>
             <Link
               to="/about"

@@ -1,4 +1,5 @@
 import { useMemo, useState } from "react";
+import { useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { MapPin, SearchX, ShieldCheck } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
@@ -22,6 +23,7 @@ function FindDonors() {
   const [only, setOnly] = useState("");
   const [page, setPage] = useState(1);
   const [loading] = useState(false);
+  const { isDonor } = useSelector(state => state.user);
 
   const results = useMemo(
     () =>
@@ -52,9 +54,16 @@ function FindDonors() {
         title="Find donors"
         description={`${results.length} verified donors match your filters.`}
         actions={
-          <Button as="link" to="/requests/new" variant="secondary">
-            Create request
-          </Button>
+          <div className="flex gap-3">
+            {!isDonor && (
+              <Button as="link" to="/become-donor" variant="soft">
+                Become a donor
+              </Button>
+            )}
+            <Button as="link" to="/requests/new" variant="secondary">
+              Create request
+            </Button>
+          </div>
         }
       />
 
