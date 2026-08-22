@@ -83,24 +83,24 @@ const SidebarProvider = React.forwardRef(
       [state, open, setOpen, isMobile, openMobile, setOpenMobile, toggleSidebar]
     );
     return <SidebarContext.Provider value={contextValue}>
-        <TooltipProvider delayDuration={0}>
-          <div
-      style={{
-        "--sidebar-width": SIDEBAR_WIDTH,
-        "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
-        ...style
-      }}
-      className={cn(
-        "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
-        className
-      )}
-      ref={ref}
-      {...props}
-    >
-            {children}
-          </div>
-        </TooltipProvider>
-      </SidebarContext.Provider>;
+      <TooltipProvider delayDuration={0}>
+        <div
+          style={{
+            "--sidebar-width": SIDEBAR_WIDTH,
+            "--sidebar-width-icon": SIDEBAR_WIDTH_ICON,
+            ...style
+          }}
+          className={cn(
+            "group/sidebar-wrapper flex min-h-svh w-full has-[[data-variant=inset]]:bg-sidebar",
+            className
+          )}
+          ref={ref}
+          {...props}
+        >
+          {children}
+        </div>
+      </TooltipProvider>
+    </SidebarContext.Provider>;
   }
 );
 SidebarProvider.displayName = "SidebarProvider";
@@ -123,65 +123,65 @@ const Sidebar = React.forwardRef(
         ref={ref}
         {...props}
       >
-          {children}
-        </div>;
+        {children}
+      </div>;
     }
     if (isMobile) {
       return <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
-          <SheetContent
-        data-sidebar="sidebar"
-        data-mobile="true"
-        className="w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-        style={{
-          "--sidebar-width": SIDEBAR_WIDTH_MOBILE
-        }}
-        side={side}
-      >
-            <SheetHeader className="sr-only">
-              <SheetTitle>Sidebar</SheetTitle>
-              <SheetDescription>Displays the mobile sidebar.</SheetDescription>
-            </SheetHeader>
-            <div className="flex h-full w-full flex-col">{children}</div>
-          </SheetContent>
-        </Sheet>;
+        <SheetContent
+          data-sidebar="sidebar"
+          data-mobile="true"
+          className={cn('w-(--sidebar-width)', 'bg-sidebar', 'p-0', 'text-sidebar-foreground', '[&>button]:hidden')}
+          style={{
+            "--sidebar-width": SIDEBAR_WIDTH_MOBILE
+          }}
+          side={side}
+        >
+          <SheetHeader className="sr-only">
+            <SheetTitle>Sidebar</SheetTitle>
+            <SheetDescription>Displays the mobile sidebar.</SheetDescription>
+          </SheetHeader>
+          <div className={cn('flex', 'h-full', 'w-full', 'flex-col')}>{children}</div>
+        </SheetContent>
+      </Sheet>;
     }
     return <div
       ref={ref}
-      className="group peer hidden text-sidebar-foreground md:block"
+      className={cn('group', 'peer', 'hidden', 'text-sidebar-foreground', 'md:block')}
       data-state={state}
       data-collapsible={state === "collapsed" ? collapsible : ""}
       data-variant={variant}
       data-side={side}
     >
-        {
-      /* This is what handles the sidebar gap on desktop */
-    }
+      {
+        /* This is what handles the sidebar gap on desktop */
+      }
+      <div
+        className={cn(
+          "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
+          "group-data-[collapsible=offcanvas]:w-0",
+          "group-data-[side=right]:rotate-180",
+          variant === "floating" || variant === "inset" ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
+        )}
+      />
+      <div
+        className={cn(
+          "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
+          side === "left" ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]" : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
+          // Adjust the padding for floating and inset variants.
+          variant === "floating" || variant === "inset" ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
+          className
+        )}
+        {...props}
+      >
         <div
-      className={cn(
-        "relative w-(--sidebar-width) bg-transparent transition-[width] duration-200 ease-linear",
-        "group-data-[collapsible=offcanvas]:w-0",
-        "group-data-[side=right]:rotate-180",
-        variant === "floating" || variant === "inset" ? "group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4))]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon)"
-      )}
-    />
-        <div
-      className={cn(
-        "fixed inset-y-0 z-10 hidden h-svh w-(--sidebar-width) transition-[left,right,width] duration-200 ease-linear md:flex",
-        side === "left" ? "left-0 group-data-[collapsible=offcanvas]:left-[calc(var(--sidebar-width)*-1)]" : "right-0 group-data-[collapsible=offcanvas]:right-[calc(var(--sidebar-width)*-1)]",
-        // Adjust the padding for floating and inset variants.
-        variant === "floating" || variant === "inset" ? "p-2 group-data-[collapsible=icon]:w-[calc(var(--sidebar-width-icon)_+_theme(spacing.4)_+2px)]" : "group-data-[collapsible=icon]:w-(--sidebar-width-icon) group-data-[side=left]:border-r group-data-[side=right]:border-l",
-        className
-      )}
-      {...props}
-    >
-          <div
-      data-sidebar="sidebar"
-      className="flex h-full w-full flex-col bg-sidebar group-data-[variant=floating]:rounded-lg group-data-[variant=floating]:border group-data-[variant=floating]:border-sidebar-border group-data-[variant=floating]:shadow"
-    >
-            {children}
-          </div>
+          data-sidebar="sidebar"
+          className={cn('flex', 'h-full', 'w-full', 'flex-col', 'bg-sidebar', 'group-data-[variant=floating]:rounded-lg', 'group-data-[variant=floating]:border', 'group-data-[variant=floating]:border-sidebar-border', 'group-data-[variant=floating]:shadow')}
+        >
+          {children}
         </div>
-      </div>;
+      </div>
+    </div>;
   }
 );
 Sidebar.displayName = "Sidebar";
@@ -199,9 +199,9 @@ const SidebarTrigger = React.forwardRef(({ className, onClick, ...props }, ref) 
     }}
     {...props}
   >
-      <PanelLeft />
-      <span className="sr-only">Toggle Sidebar</span>
-    </Button>;
+    <PanelLeft />
+    <span className="sr-only">Toggle Sidebar</span>
+  </Button>;
 });
 SidebarTrigger.displayName = "SidebarTrigger";
 const SidebarRail = React.forwardRef(
@@ -416,14 +416,14 @@ const SidebarMenuButton = React.forwardRef(
       };
     }
     return <Tooltip>
-        <TooltipTrigger asChild>{button}</TooltipTrigger>
-        <TooltipContent
-      side="right"
-      align="center"
-      hidden={state !== "collapsed" || isMobile}
-      {...tooltip}
-    />
-      </Tooltip>;
+      <TooltipTrigger asChild>{button}</TooltipTrigger>
+      <TooltipContent
+        side="right"
+        align="center"
+        hidden={state !== "collapsed" || isMobile}
+        {...tooltip}
+      />
+    </Tooltip>;
   }
 );
 SidebarMenuButton.displayName = "SidebarMenuButton";
@@ -474,15 +474,15 @@ const SidebarMenuSkeleton = React.forwardRef(({ className, showIcon = false, ...
     className={cn("flex h-8 items-center gap-2 rounded-md px-2", className)}
     {...props}
   >
-      {showIcon && <Skeleton className="size-4 rounded-md" data-sidebar="menu-skeleton-icon" />}
-      <Skeleton
-    className="h-4 max-w-(--skeleton-width) flex-1"
-    data-sidebar="menu-skeleton-text"
-    style={{
-      "--skeleton-width": width
-    }}
-  />
-    </div>;
+    {showIcon && <Skeleton className={cn('size-4', 'rounded-md')} data-sidebar="menu-skeleton-icon" />}
+    <Skeleton
+      className={cn('h-4', 'max-w-(--skeleton-width)', 'flex-1')}
+      data-sidebar="menu-skeleton-text"
+      style={{
+        "--skeleton-width": width
+      }}
+    />
+  </div>;
 });
 SidebarMenuSkeleton.displayName = "SidebarMenuSkeleton";
 const SidebarMenuSub = React.forwardRef(

@@ -1,3 +1,4 @@
+import { forwardRef } from "react";
 import { cn } from "@/lib/utils";
 
 export function Field({ label, hint, error, required, children, className }) {
@@ -22,18 +23,21 @@ export function Field({ label, hint, error, required, children, className }) {
 export const inputBase =
   "w-full rounded-xl border border-border bg-card px-3.5 py-2.5 text-sm text-foreground placeholder:text-muted-foreground shadow-soft transition-colors focus:border-primary focus:outline-none focus:ring-2 focus:ring-ring/30 disabled:opacity-60";
 
-export default function Input({ className, icon: Icon, ...props }) {
+const Input = forwardRef(({ className, icon: Icon, ...props }, ref) => {
   if (Icon) {
     return (
       <div className="relative">
         <Icon className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <input className={cn(inputBase, "pl-10", className)} {...props} />
+        <input ref={ref} className={cn(inputBase, "pl-10", className)} {...props} />
       </div>
     );
   }
-  return <input className={cn(inputBase, className)} {...props} />;
-}
+  return <input ref={ref} className={cn(inputBase, className)} {...props} />;
+});
+Input.displayName = "Input";
+export default Input;
 
-export function Textarea({ className, ...props }) {
-  return <textarea className={cn(inputBase, "min-h-28 resize-y", className)} {...props} />;
-}
+export const Textarea = forwardRef(({ className, ...props }, ref) => {
+  return <textarea ref={ref} className={cn(inputBase, "min-h-28 resize-y", className)} {...props} />;
+});
+Textarea.displayName = "Textarea";

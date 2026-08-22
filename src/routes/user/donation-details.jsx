@@ -1,21 +1,44 @@
 import { useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import { useDispatch, useSelector } from "react-redux";
-import { ArrowLeft, Clock, MapPin, CheckCircle2, User, Activity, AlertCircle } from "lucide-react";
+import { ArrowLeft, Clock, MapPin, CheckCircle2, User, Activity, AlertCircle, HeartHandshake } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
 import StatusBadge from "@/components/blood/StatusBadge";
 import Card from "@/components/blood/Card";
-import { selectDonation } from "@/store/donationSlice";
+import { useGetMyDonationsQuery } from "@/features/donations/donationApiSlice";
 import { formatDate } from "@/data/mock";
 
 export default function DonationDetails() {
   const { id } = useParams();
-  const dispatch = useDispatch();
-  const { selectedDonation: donation } = useSelector(state => state.donation);
+  const { data: response, isLoading } = useGetMyDonationsQuery();
+  
+  const rawDonations = response?.data || [];
+  const rawDonation = rawDonations.find(d => d.id === id);
 
-  useEffect(() => {
-    dispatch(selectDonation(id));
-  }, [id, dispatch]);
+  const donation = rawDonation ? {
+    id: rawDonation.id,
+    donationDate: rawDonation.donationDate,
+    hospitalName: rawDonation.hospitalName,
+    city: rawDonation.city,
+    bloodGroup: rawDonation.bloodGroup,
+    units: rawDonation.units,
+    status: rawDonation.status,
+    bloodRequestId: rawDonation.bloodRequestId || "N/A",
+    patientName: rawDonation.bloodRequest?.patientName || "N/A",
+    urgency: "Normal", // We don't store urgency in Donation model directly
+    address: rawDonation.hospitalName,
+    area: rawDonation.city,
+    createdAt: rawDonation.createdAt
+  } : null;
+
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <div className="flex justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        </div>
+      </UserLayout>
+    );
+  }
 
   if (!donation) {
     return (

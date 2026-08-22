@@ -1,19 +1,70 @@
+import { useState, useEffect } from "react";
 import { Link, useNavigate, useSearchParams } from "react-router-dom";
-import { Users, Heart, ShieldCheck, Mail, Lock, Eye } from "lucide-react";
+import { Users, Heart, ShieldCheck, Mail, Lock, Eye, EyeOff } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
+import { useLoginMutation } from "@/features/users/userApiSlice";
 import Logo from "@/components/blood/Logo";
 import Button from "@/components/blood/Button";
 import Input, { Field } from "@/components/blood/Input";
 import { toast } from "@/components/blood/Toast";
+const loginSchema = z.object({
+  email: z.string().email("Invalid email address"),
+  password: z.string().min(1, "Password is required"),
+  rememberMe: z.boolean().optional(),
+});
 
 function Login() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
 
-  function onSubmit(e) {
-    e.preventDefault();
-    toast.success("Welcome back!");
-    const redirectUrl = searchParams.get("redirect") || "/dashboard";
-    navigate(redirectUrl);
+  const [login, { isLoading }] = useLoginMutation();
+
+  const [showPassword, setShowPassword] = useState(false);
+
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    formState: { errors },
+  } = useForm({
+    resolver: zodResolver(loginSchema),
+    defaultValues: {
+      rememberMe: true, // Default to true for convenience
+    }
+  });
+
+  useEffect(() => {
+    // Check for saved email in localStorage for "Remember me"
+    const savedEmail = localStorage.getItem("rememberedEmail");
+    if (savedEmail) {
+      setValue("email", savedEmail);
+      setValue("rememberMe", true);
+    }
+  }, [setValue]);
+
+  async function onSubmit(data) {
+    try {
+      await login({ 
+        email: data.email, 
+        password: data.password, 
+        rememberMe: data.rememberMe 
+      }).unwrap();
+      
+      // Handle "Remember me" on frontend
+      if (data.rememberMe) {
+        localStorage.setItem("rememberedEmail", data.email);
+      } else {
+        localStorage.removeItem("rememberedEmail");
+      }
+
+      toast.success("Welcome back!");
+      const redirectUrl = searchParams.get("redirect") || "/dashboard";
+      navigate(redirectUrl);
+    } catch (err) {
+      toast.error(err.data?.message || "Failed to login. Please check your credentials.");
+    }
   }
 
   return (
@@ -72,36 +123,51 @@ function Login() {
               Sign in to continue to LifeDrop.
             </p>
           </div>
+
+          {searchParams.get("error") === "suspended" && (
+            <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-primary font-medium text-center">
+              Your account has been suspended by the administrator. Please contact support.
+            </div>
+          )}
           
-          <form className="space-y-6" onSubmit={onSubmit}>
-            <Field label="Email" required>
+          <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
+            <Field label="Email" error={errors.email?.message} required>
               <div className="relative">
-                <Input type="email" placeholder="you@example.com" className="pl-10" required />
+                <Input type="email" placeholder="you@example.com" className="pl-10" {...register("email")} />
                 <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               </div>
             </Field>
-            <Field label="Password" required>
+            <Field label="Password" error={errors.password?.message} required>
               <div className="relative">
-                <Input type="password" placeholder="••••••••" className="pl-10 pr-10" required />
+                <Input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  className="pl-10 pr-10" 
+                  {...register("password")} 
+                />
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <button type="button" className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground">
-                  <Eye className="h-5 w-5" />
+                <button 
+                  type="button" 
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
                 </button>
               </div>
             </Field>
             
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 font-medium text-muted-foreground">
-                <input type="checkbox" className="h-4 w-4 rounded border-border accent-primary" />
+                <input type="checkbox" {...register("rememberMe")} className="h-4 w-4 rounded border-border accent-primary" />
                 Remember me
               </label>
-              <Link to="/contact" className="font-semibold text-primary hover:underline">
+              <Link to="/forgot-password" className="font-semibold text-primary hover:underline">
                 Forgot Password?
               </Link>
             </div>
             
-            <Button type="submit" className="w-full h-12 text-base font-semibold">
-              Login
+            <Button type="submit" disabled={isLoading} className="w-full h-12 text-base font-semibold">
+              {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
           

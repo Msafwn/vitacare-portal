@@ -2,7 +2,7 @@ import { cn } from "@/lib/utils";
 
 export default function Card({ className, children, ...props }) {
   return (
-    <div className={cn("surface p-5", className)} {...props}>
+    <div className={cn("surface p-5 min-w-0", className)} {...props}>
       {children}
     </div>
   );
@@ -28,7 +28,7 @@ export function StatCard({ label, value, icon: Icon, delta, tone = "primary" }) 
     info: "bg-info-soft text-info",
   };
   return (
-    <div className="surface p-5">
+    <div className="surface p-5 min-w-0">
       <div className="flex items-center justify-between">
         <span className="text-sm text-muted-foreground">{label}</span>
         {Icon && (

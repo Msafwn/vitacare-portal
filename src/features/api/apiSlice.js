@@ -1,16 +1,17 @@
 import { createApi } from '@reduxjs/toolkit/query/react';
-import axiosInstance from '../lib/axios';
+import axiosInstance from '../../lib/axios';
 
 const axiosBaseQuery = () => async ({ url, method, data, params }) => {
   try {
     const result = await axiosInstance({ url, method, data, params });
     return { data: result.data };
   } catch (axiosError) {
-    const err = axiosError;
     return {
       error: {
-        status: err.response?.status,
-        data: err.response?.data || err.message,
+        status: axiosError.response?.status || 500,
+        data: axiosError.response?.data || { 
+          message: axiosError.message || "An unexpected error occurred" 
+        },
       },
     };
   }

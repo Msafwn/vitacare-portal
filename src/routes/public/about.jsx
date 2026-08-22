@@ -23,7 +23,7 @@ function About() {
         </div>
       </section>
 
-      <section className="mx-auto max-w-[1400px] px-4 py-14 sm:px-6">
+      <section className="mx-auto max-w-[1400px] 2xl:max-w-[2560px] px-4 py-14 sm:px-6">
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           {values.map((v) => (
             <div key={v.title} className="surface p-6">

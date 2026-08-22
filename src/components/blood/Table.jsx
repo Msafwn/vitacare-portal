@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils";
 export default function Table({ columns = [], rows = [], renderCell, empty, className }) {
   return (
     <div className={cn("surface overflow-hidden", className)}>
-      <div className="overflow-x-auto">
+      <div className="overflow-x-auto min-h-[260px]">
         <table className="w-full min-w-[640px] border-collapse text-sm">
           <thead>
             <tr className="border-b border-border bg-muted/60">

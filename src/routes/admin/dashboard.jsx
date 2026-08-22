@@ -16,9 +16,28 @@ import PageHeader from "@/components/blood/PageHeader";
 import Button from "@/components/blood/Button";
 import Card, { StatCard } from "@/components/blood/Card";
 import StatusBadge from "@/components/blood/StatusBadge";
-import { formatDate, inventory, monthlyDonations, requests } from "@/data/mock";
+import { useGetAdminDashboardQuery } from "@/features/admin/adminApiSlice";
+
+function formatDate(dateStr) {
+  const date = new Date(dateStr);
+  return date.toLocaleDateString("en-US", { month: "short", day: "numeric" });
+}
 
 function AdminDashboard() {
+  const { data: dashboardResponse, isLoading } = useGetAdminDashboardQuery();
+
+  if (isLoading) {
+    return (
+      <AdminLayout>
+        <div className="flex h-[50vh] items-center justify-center">
+          <p className="text-muted-foreground">Loading dashboard data...</p>
+        </div>
+      </AdminLayout>
+    );
+  }
+
+  const { stats, charts, recentRequests } = dashboardResponse?.data || {};
+
   return (
     <AdminLayout>
       <PageHeader
@@ -32,15 +51,15 @@ function AdminDashboard() {
       />
 
       <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        <StatCard label="Total donors" value="12,480" icon={Users} delta="+312 this month" />
+        <StatCard label="Total donors" value={stats?.donors.total || 0} icon={Users} delta={stats?.donors.delta} />
         <StatCard
           label="Units in stock"
-          value={inventory.reduce((a, b) => a + b.units, 0)}
+          value={stats?.inventory.total || 0}
           icon={Boxes}
           tone="info"
         />
-        <StatCard label="Open requests" value="46" icon={FileText} tone="warning" delta="4 critical" />
-        <StatCard label="Donations (Jul)" value="205" icon={Droplet} tone="success" delta="+6.8%" />
+        <StatCard label="Open requests" value={stats?.requests.total || 0} icon={FileText} tone="warning" delta={stats?.requests.delta} />
+        <StatCard label="Donations (Month)" value={stats?.donations.total || 0} icon={Droplet} tone="success" delta={stats?.donations.delta} />
       </div>
 
       <div className="mt-6 grid gap-6 lg:grid-cols-3">
@@ -48,7 +67,7 @@ function AdminDashboard() {
           <h2 className="text-base font-semibold text-foreground">Donations vs requests</h2>
           <div className="mt-5 h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <LineChart data={monthlyDonations}>
+              <LineChart data={charts?.monthlyTrend || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="month" stroke="var(--muted-foreground)" fontSize={12} />
                 <YAxis stroke="var(--muted-foreground)" fontSize={12} />
@@ -71,7 +90,7 @@ function AdminDashboard() {
           <h2 className="text-base font-semibold text-foreground">Stock by blood group</h2>
           <div className="mt-5 h-72">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={inventory}>
+              <BarChart data={charts?.inventoryBar || []}>
                 <CartesianGrid strokeDasharray="3 3" stroke="var(--border)" vertical={false} />
                 <XAxis dataKey="group" stroke="var(--muted-foreground)" fontSize={12} />
                 <YAxis stroke="var(--muted-foreground)" fontSize={12} />
@@ -98,23 +117,27 @@ function AdminDashboard() {
           </Link>
         </div>
         <div className="mt-4 divide-y divide-border">
-          {requests.slice(0, 5).map((r) => (
-            <div key={r.id} className="flex flex-wrap items-center gap-3 py-3">
-              <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-xs font-semibold text-primary">
-                {r.bloodGroup}
-              </span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-medium text-foreground">
-                  {r.patient} · {r.units} unit(s)
-                </p>
-                <p className="truncate text-xs text-muted-foreground">
-                  {r.hospital}, {r.city} · needed {formatDate(r.neededOn)}
-                </p>
+          {recentRequests?.length > 0 ? (
+            recentRequests.map((r) => (
+              <div key={r.id} className="flex flex-wrap items-center gap-3 py-3">
+                <span className="flex h-9 w-9 items-center justify-center rounded-xl bg-primary-soft text-xs font-semibold text-primary">
+                  {r.bloodGroup}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-medium text-foreground">
+                    {r.patient} · {r.units} unit(s)
+                  </p>
+                  <p className="truncate text-xs text-muted-foreground">
+                    {r.hospital}, {r.city} · needed {formatDate(r.neededOn)}
+                  </p>
+                </div>
+                <StatusBadge status={r.urgency} />
+                <StatusBadge status={r.status} />
               </div>
-              <StatusBadge status={r.urgency} />
-              <StatusBadge status={r.status} />
-            </div>
-          ))}
+            ))
+          ) : (
+            <p className="py-4 text-center text-sm text-muted-foreground">No recent requests.</p>
+          )}
         </div>
       </Card>
     </AdminLayout>

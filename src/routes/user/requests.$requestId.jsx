@@ -1,21 +1,54 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
-import { Building2, CalendarClock, Droplet, MapPin, User } from "lucide-react";
+import { useParams, Link } from "react-router-dom";
+import { Building2, CalendarClock, Droplet, MapPin, User, AlertCircle, Phone } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
 import PageHeader from "@/components/blood/PageHeader";
 import Button from "@/components/blood/Button";
 import Card from "@/components/blood/Card";
 import StatusBadge from "@/components/blood/StatusBadge";
-import Avatar from "@/components/blood/Avatar";
 import Modal from "@/components/blood/Modal";
 import EmptyState from "@/components/blood/EmptyState";
 import { toast } from "@/components/blood/Toast";
-import { donors, formatDate, requests } from "@/data/mock";
+import { formatDate } from "@/data/mock";
+import { useGetMyRequestsQuery, useUpdateRequestStatusMutation } from "@/features/requests/requestApiSlice";
 
 function RequestDetails() {
-  const { requestId } = useParams({ from: "/requests/$requestId" });
-  const request = requests.find((r) => r.id === requestId);
+  const { requestId } = useParams();
+  const { data: response, isLoading } = useGetMyRequestsQuery();
+  const [updateStatus] = useUpdateRequestStatusMutation();
   const [open, setOpen] = useState(false);
+
+  const isRequester = response?.data?.sent?.some((r) => r.id === requestId);
+  const isDonor = response?.data?.received?.some((r) => r.id === requestId);
+  
+  const allRequests = [...(response?.data?.sent || []), ...(response?.data?.received || [])];
+  const rawRequest = allRequests.find((r) => r.id === requestId);
+
+  const request = rawRequest ? {
+    id: rawRequest.id,
+    patient: rawRequest.patientName,
+    requester: rawRequest.requester ? rawRequest.requester.name : "You",
+    bloodGroup: rawRequest.bloodGroup,
+    units: rawRequest.unitsRequired,
+    hospital: rawRequest.hospital,
+    city: rawRequest.city,
+    neededOn: rawRequest.requiredBy || rawRequest.createdAt,
+    createdAt: rawRequest.createdAt,
+    urgency: rawRequest.urgency,
+    status: rawRequest.status,
+    contactNumber: rawRequest.contactNumber || "N/A",
+    notes: rawRequest.notes || "No additional notes provided.",
+  } : null;
+
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <div className="flex justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        </div>
+      </UserLayout>
+    );
+  }
 
   if (!request) {
     return (
@@ -27,13 +60,12 @@ function RequestDetails() {
     );
   }
 
-  const matches = donors.filter((d) => d.bloodGroup === request.bloodGroup).slice(0, 4);
-
   const facts = [
     { icon: User, label: "Patient", value: request.patient },
     { icon: Droplet, label: "Blood group", value: `${request.bloodGroup} · ${request.units} unit(s)` },
     { icon: Building2, label: "Hospital", value: request.hospital },
     { icon: MapPin, label: "City", value: request.city },
+    { icon: Phone, label: "Contact Phone", value: request.contactNumber },
     { icon: CalendarClock, label: "Needed by", value: formatDate(request.neededOn) },
     { icon: CalendarClock, label: "Created", value: formatDate(request.createdAt) },
   ];
@@ -41,15 +73,33 @@ function RequestDetails() {
   return (
     <UserLayout>
       <PageHeader
-        title={`Request ${request.id.toUpperCase()}`}
+        title="Request Details"
         description={`Raised by ${request.requester}`}
         actions={
           <>
             <StatusBadge status={request.urgency} />
             <StatusBadge status={request.status} />
-            <Button variant="secondary" onClick={() => setOpen(true)}>
-              Cancel request
-            </Button>
+            {isRequester && request.status !== 'cancelled' && request.status !== 'fulfilled' && (
+              <Button variant="secondary" size="sm" onClick={() => setOpen(true)}>
+                Cancel
+              </Button>
+            )}
+            {isRequester && request.status === 'accepted' && (
+              <Button 
+                variant="primary" 
+                size="sm"
+                onClick={async () => {
+                  try {
+                    await updateStatus({ id: request.id, status: 'fulfilled' }).unwrap();
+                    toast.success("Request marked as fulfilled!");
+                  } catch (e) {
+                    toast.error("Failed to mark as fulfilled");
+                  }
+                }}
+              >
+                Mark Fulfilled
+              </Button>
+            )}
           </>
         }
       />
@@ -75,25 +125,6 @@ function RequestDetails() {
             <p className="mt-1 text-sm text-foreground">{request.notes}</p>
           </div>
         </Card>
-
-        <Card>
-          <h2 className="text-base font-semibold text-foreground">Matched donors</h2>
-          <p className="mt-1 text-sm text-muted-foreground">
-            {matches.length} donors with {request.bloodGroup}
-          </p>
-          <div className="mt-4 space-y-3">
-            {matches.map((d) => (
-              <div key={d.id} className="flex items-center gap-3">
-                <Avatar name={d.name} size="sm" />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-medium text-foreground">{d.name}</p>
-                  <p className="text-xs text-muted-foreground">{d.city}</p>
-                </div>
-                <StatusBadge status={d.status} />
-              </div>
-            ))}
-          </div>
-        </Card>
       </div>
 
       <Card className="mt-6">
@@ -102,7 +133,7 @@ function RequestDetails() {
           {[
             ["Request created", formatDate(request.createdAt)],
             ["Donors notified", formatDate(request.createdAt)],
-            ["Under review by blood bank", formatDate(request.neededOn)],
+            ["Under review", formatDate(request.neededOn)],
           ].map(([title, date]) => (
             <li key={title} className="relative">
               <span className="absolute -left-[26px] top-1.5 h-2.5 w-2.5 rounded-full bg-primary" />
@@ -125,9 +156,14 @@ function RequestDetails() {
             </Button>
             <Button
               variant="danger"
-              onClick={() => {
+              onClick={async () => {
                 setOpen(false);
-                toast.success("Request cancelled");
+                try {
+                  await updateStatus({ id: request.id, status: 'cancelled' }).unwrap();
+                  toast.success("Request cancelled");
+                } catch (e) {
+                  toast.error("Failed to cancel request");
+                }
               }}
             >
               Cancel request
@@ -136,7 +172,7 @@ function RequestDetails() {
         }
       >
         <p className="text-sm text-muted-foreground">
-          Request {request.id.toUpperCase()} for {request.patient} will be marked as cancelled.
+          This blood request for {request.patient} will be marked as cancelled.
         </p>
       </Modal>
     </UserLayout>

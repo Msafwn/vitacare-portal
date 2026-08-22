@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
 import { Calendar, Droplet, Mail, MapPin, Phone, ShieldCheck } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
 import PageHeader from "@/components/blood/PageHeader";
@@ -11,12 +11,25 @@ import Modal from "@/components/blood/Modal";
 import EmptyState from "@/components/blood/EmptyState";
 import { Textarea } from "@/components/blood/Input";
 import { toast } from "@/components/blood/Toast";
-import { donations, donors, formatDate } from "@/data/mock";
+import { formatDate } from "@/data/mock";
+import { useGetDonorByIdQuery } from "@/features/users/userApiSlice";
 
 function DonorDetails() {
-  const { donorId } = useParams({ from: "/donors/$donorId" });
-  const donor = donors.find((d) => d.id === donorId);
-  const [open, setOpen] = useState(false);
+  const { donorId: secureId } = useParams();
+  const donorId = secureId ? secureId.replace("VITA-", "").replace("-SECURE", "") : null;
+  const navigate = useNavigate();
+  const { data: response, isLoading } = useGetDonorByIdQuery(donorId);
+  const donor = response?.data;
+
+  if (isLoading) {
+    return (
+      <UserLayout>
+        <div className="flex justify-center py-12">
+          <div className="h-8 w-8 animate-spin rounded-full border-4 border-primary border-t-transparent"></div>
+        </div>
+      </UserLayout>
+    );
+  }
 
   if (!donor) {
     return (
@@ -28,7 +41,8 @@ function DonorDetails() {
     );
   }
 
-  const history = donations.filter((d) => d.donor === donor.name);
+  // We do not show the full donation history publicly for privacy reasons.
+  // The backend now provides the real `donor.donations` count instead.
 
   return (
     <UserLayout>
@@ -36,7 +50,7 @@ function DonorDetails() {
         title="Donor details"
         description="Contact this donor only for genuine, verified requirements."
         actions={
-          <Button onClick={() => setOpen(true)} disabled={donor.status !== "available"}>
+          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} disabled={donor.status !== "available"}>
             Send request
           </Button>
         }
@@ -68,8 +82,7 @@ function DonorDetails() {
           <div className="mt-6 grid gap-4 border-t border-border pt-6 sm:grid-cols-3">
             {[
               { icon: Droplet, label: "Total donations", value: donor.donations },
-              { icon: Calendar, label: "Last donation", value: formatDate(donor.lastDonation) },
-              { icon: Phone, label: "Phone", value: donor.phone },
+              { icon: Calendar, label: "Last donation", value: donor.lastDonation ? formatDate(donor.lastDonation) : 'Never' },
             ].map((s) => (
               <div key={s.label}>
                 <p className="flex items-center gap-1.5 text-xs text-muted-foreground">
@@ -82,68 +95,47 @@ function DonorDetails() {
         </Card>
 
         <Card>
-          <h3 className="text-base font-semibold text-foreground">Contact</h3>
-          <div className="mt-4 space-y-3 text-sm">
-            <p className="flex items-center gap-2 text-muted-foreground">
-              <Phone className="h-4 w-4" /> {donor.phone}
-            </p>
-            <p className="flex items-center gap-2 text-muted-foreground">
-              <Mail className="h-4 w-4" /> {donor.name.split(" ")[0].toLowerCase()}@example.com
-            </p>
-          </div>
-          <Button variant="soft" className="mt-5 w-full" onClick={() => setOpen(true)}>
-            Request donation
+          <h3 className="text-base font-semibold text-foreground">Contact details</h3>
+          {donor.phone ? (
+            <div className="mt-4 space-y-4 rounded-xl bg-muted/50 p-4">
+              <div className="flex items-center gap-3">
+                <div className="rounded-full bg-primary-soft p-2">
+                  <Phone className="h-4 w-4 text-primary" />
+                </div>
+                <div>
+                  <p className="text-xs text-muted-foreground">Phone number</p>
+                  <p className="text-sm font-medium text-foreground">{donor.phone}</p>
+                </div>
+              </div>
+              {donor.email && (
+                <div className="flex items-center gap-3">
+                  <div className="rounded-full bg-primary-soft p-2">
+                    <Mail className="h-4 w-4 text-primary" />
+                  </div>
+                  <div>
+                    <p className="text-xs text-muted-foreground">Email address</p>
+                    <p className="text-sm font-medium text-foreground">{donor.email}</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div className="mt-4 rounded-xl bg-primary-soft/50 p-4 text-center">
+              <ShieldCheck className="mx-auto h-6 w-6 text-primary" />
+              <p className="mt-2 text-sm font-medium text-foreground">Protected for Privacy</p>
+              <p className="mt-1 text-xs text-muted-foreground">
+                Contact details are only shared once a blood request is accepted.
+              </p>
+            </div>
+          )}
+
+          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} variant="soft" className="mt-5 w-full" disabled={donor.status !== "available"}>
+            Send request
           </Button>
         </Card>
       </div>
 
-      <Card className="mt-6">
-        <h3 className="text-base font-semibold text-foreground">Donation history</h3>
-        {history.length === 0 ? (
-          <EmptyState
-            title="No recorded donations"
-            description="This donor has no verified donations on LifeDrop yet."
-          />
-        ) : (
-          <div className="mt-4 divide-y divide-border">
-            {history.map((h) => (
-              <div key={h.id} className="flex items-center justify-between py-3">
-                <div>
-                  <p className="text-sm font-medium text-foreground">{h.center}</p>
-                  <p className="text-xs text-muted-foreground">
-                    {h.city} · {formatDate(h.date)}
-                  </p>
-                </div>
-                <StatusBadge status={h.status} />
-              </div>
-            ))}
-          </div>
-        )}
-      </Card>
 
-      <Modal
-        open={open}
-        onClose={() => setOpen(false)}
-        title={`Request ${donor.name}`}
-        description="The donor will be notified instantly and can accept or decline."
-        footer={
-          <>
-            <Button variant="secondary" onClick={() => setOpen(false)}>
-              Cancel
-            </Button>
-            <Button
-              onClick={() => {
-                setOpen(false);
-                toast.success("Request sent", { description: `${donor.name} has been notified.` });
-              }}
-            >
-              Send request
-            </Button>
-          </>
-        }
-      >
-        <Textarea placeholder="Add a short message with hospital name and urgency…" />
-      </Modal>
     </UserLayout>
   );
 }

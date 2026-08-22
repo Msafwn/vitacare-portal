@@ -54,13 +54,13 @@ export default function Sidebar({ items, open, onClose, footer }) {
 
   return (
     <>
-      <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-64 shrink-0 overflow-y-auto border-r border-sidebar-border bg-sidebar lg:block">
+      <aside className="sticky top-16 hidden h-[calc(100vh-4rem)] w-56 shrink-0 overflow-y-auto border-r border-sidebar-border bg-sidebar lg:block">
         {nav}
       </aside>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
           <div className="absolute inset-0 bg-foreground/40" onClick={onClose} aria-hidden />
-          <aside className="absolute left-0 top-0 h-full w-72 overflow-y-auto bg-sidebar shadow-card">
+          <aside className="absolute left-0 top-0 h-full w-64 overflow-y-auto bg-sidebar shadow-card">
             {nav}
           </aside>
         </div>

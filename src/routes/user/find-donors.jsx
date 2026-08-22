@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
-import { useSelector } from "react-redux";
-import { Link } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, useSearchParams } from "react-router-dom";
+import { useGetCurrentUserQuery, useGetDonorsQuery } from "@/features/users/userApiSlice";
+// Removed mockUser
 import { MapPin, SearchX, ShieldCheck } from "lucide-react";
 import UserLayout from "@/components/layout/UserLayout";
 import PageHeader from "@/components/blood/PageHeader";
@@ -12,40 +13,62 @@ import StatusBadge from "@/components/blood/StatusBadge";
 import EmptyState from "@/components/blood/EmptyState";
 import Pagination from "@/components/blood/Pagination";
 import { CardSkeleton } from "@/components/blood/Skeleton";
-import { BLOOD_GROUPS, CITIES, donors, formatDate } from "@/data/mock";
+import { BLOOD_GROUPS, CITIES, formatDate } from "@/data/mock";
 
 const PAGE_SIZE = 6;
 
 function FindDonors() {
-  const [query, setQuery] = useState("");
-  const [group, setGroup] = useState("");
-  const [city, setCity] = useState("");
-  const [only, setOnly] = useState("");
-  const [page, setPage] = useState(1);
-  const [loading] = useState(false);
-  const { isDonor } = useSelector(state => state.user);
+  const [searchParams, setSearchParams] = useSearchParams();
+  
+  const query = searchParams.get("query") || "";
+  const group = searchParams.get("group") || "";
+  const city = searchParams.get("city") || "";
+  const only = searchParams.get("only") || "";
+  const page = parseInt(searchParams.get("page") || "1", 10);
 
-  const results = useMemo(
-    () =>
-      donors.filter(
-        (d) =>
-          (!query || d.name.toLowerCase().includes(query.toLowerCase())) &&
-          (!group || d.bloodGroup === group) &&
-          (!city || d.city === city) &&
-          (!only || d.status === only),
-      ),
-    [query, group, city, only],
-  );
+  const updateParams = (updates) => {
+    setSearchParams((prev) => {
+      const next = new URLSearchParams(prev);
+      Object.entries(updates).forEach(([key, value]) => {
+        if (value) next.set(key, value);
+        else next.delete(key);
+      });
+      if (updates.page === undefined) next.delete("page");
+      return next;
+    }, { replace: true });
+  };
+
+  const setQuery = (val) => updateParams({ query: val });
+  const setGroup = (val) => updateParams({ group: val });
+  const setCity = (val) => updateParams({ city: val });
+  const setOnly = (val) => updateParams({ only: val });
+  const setPage = (val) => updateParams({ page: val.toString() });
+  
+  // Create a debounced query string so we don't spam the API on every keystroke
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(timer);
+  }, [query]);
+
+  const { data: response } = useGetCurrentUserQuery();
+  const currentUser = response?.data || {};
+  const isDonor = currentUser?.isDonor;
+
+  const { data: donorsResponse, isLoading } = useGetDonorsQuery({
+    name: debouncedQuery || undefined,
+    bloodGroup: group || undefined,
+    city: city || undefined,
+    availability: only || undefined,
+  });
+
+  const results = donorsResponse?.data || [];
 
   const totalPages = Math.max(1, Math.ceil(results.length / PAGE_SIZE));
   const current = results.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
   function reset() {
-    setQuery("");
-    setGroup("");
-    setCity("");
-    setOnly("");
-    setPage(1);
+    setSearchParams(new URLSearchParams());
   }
 
   return (
@@ -71,28 +94,19 @@ function FindDonors() {
         <SearchBar
           placeholder="Search by donor name"
           value={query}
-          onChange={(e) => {
-            setQuery(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setQuery(e.target.value)}
         />
         <Select
           options={BLOOD_GROUPS}
           placeholder="All blood groups"
           value={group}
-          onChange={(e) => {
-            setGroup(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setGroup(e.target.value)}
         />
         <Select
           options={CITIES}
           placeholder="All cities"
           value={city}
-          onChange={(e) => {
-            setCity(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setCity(e.target.value)}
         />
         <Select
           options={[
@@ -101,17 +115,14 @@ function FindDonors() {
           ]}
           placeholder="Any status"
           value={only}
-          onChange={(e) => {
-            setOnly(e.target.value);
-            setPage(1);
-          }}
+          onChange={(e) => setOnly(e.target.value)}
         />
         <Button variant="secondary" onClick={reset}>
           Reset
         </Button>
       </div>
 
-      {loading ? (
+      {isLoading ? (
         <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
           {Array.from({ length: 6 }).map((_, i) => (
             <CardSkeleton key={i} />
@@ -155,8 +166,7 @@ function FindDonors() {
                   <StatusBadge status={d.status} />
                 </div>
                 <Link
-                  to="/donors/$donorId"
-                  params={{ donorId: d.id }}
+                  to={`/donors/${d.id}`}
                   className="mt-4 flex h-10 items-center justify-center rounded-xl border border-border text-sm font-medium text-foreground transition-colors hover:bg-muted"
                 >
                   View profile

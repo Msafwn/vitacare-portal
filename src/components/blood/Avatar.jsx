@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 
-const sizes = { sm: "h-8 w-8 text-xs", md: "h-10 w-10 text-sm", lg: "h-14 w-14 text-lg" };
+const sizes = { sm: "h-8 w-8 text-xs", md: "h-10 w-10 text-sm", lg: "h-14 w-14 text-lg", xl: "h-32 w-32 text-4xl" };
 
 export default function Avatar({ name = "", src, size = "md", className }) {
   const initials = name

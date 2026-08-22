@@ -1,18 +1,50 @@
-import { Link, useNavigate } from "react-router-dom";
-import { ShieldCheck } from "lucide-react";
+import { useState } from "react";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
+import { ShieldCheck, Eye, EyeOff } from "lucide-react";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import Logo from "@/components/blood/Logo";
 import Button from "@/components/blood/Button";
 import Input, { Field } from "@/components/blood/Input";
 import { toast } from "@/components/blood/Toast";
+import { useLoginMutation } from "@/features/users/userApiSlice";
+
+const adminLoginSchema = z.object({
+  email: z.string().email("Invalid admin email address"),
+  password: z.string().min(1, "Password is required"),
+});
 
 function AdminLogin() {
   const navigate = useNavigate();
+  const [login] = useLoginMutation();
+  const [showPassword, setShowPassword] = useState(false);
+  const [searchParams] = useSearchParams();
 
-  function onSubmit(e) {
-    e.preventDefault();
-    localStorage.setItem("adminToken", "true");
-    toast.success("Signed in as administrator");
-    navigate("/admin/dashboard");
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(adminLoginSchema),
+  });
+
+  async function onSubmit(data) {
+    try {
+      const response = await login({ email: data.email, password: data.password }).unwrap();
+      const user = response?.data?.user;
+
+      if (user?.role !== "admin") {
+        toast.error("Access denied. You are not an administrator.");
+        return;
+      }
+
+      localStorage.setItem("adminToken", "true");
+      toast.success("Signed in as administrator");
+      navigate("/admin/dashboard");
+    } catch (e) {
+      toast.error(e.data?.message || "Login failed");
+    }
   }
 
   return (
@@ -29,18 +61,34 @@ function AdminLogin() {
           <p className="mt-1 text-sm text-muted-foreground">
             Manage donors, requests, inventory and reports.
           </p>
-          <form className="mt-6 space-y-5" onSubmit={onSubmit}>
-            <Field label="Admin email" required>
-              <Input type="email" placeholder="admin@lifedrop.org" required />
+          {searchParams.get("error") === "suspended" && (
+            <div className="mt-4 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-primary font-medium text-center">
+              Your account has been suspended by the administrator. Please contact support.
+            </div>
+          )}
+          <form className="mt-6 space-y-5" onSubmit={handleSubmit(onSubmit)}>
+            <Field label="Admin email" error={errors.email?.message} required>
+              <Input type="email" placeholder="admin@lifedrop.org" {...register("email")} />
             </Field>
-            <Field label="Password" required>
-              <Input type="password" placeholder="••••••••" required />
+            <Field label="Password" error={errors.password?.message} required>
+              <div className="relative">
+                <Input 
+                  type={showPassword ? "text" : "password"} 
+                  placeholder="••••••••" 
+                  className="pr-10"
+                  {...register("password")} 
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute right-3.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
+                >
+                  {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </Field>
-            <Field label="Access code" hint="6-digit code from your authenticator app.">
-              <Input inputMode="numeric" placeholder="••••••" />
-            </Field>
-            <Button type="submit" className="w-full">
-              Sign in
+            <Button type="submit" disabled={isSubmitting} className="w-full">
+              {isSubmitting ? "Signing in..." : "Sign in"}
             </Button>
           </form>
         </div>

@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Link } from "react-router-dom";
-import { useSelector } from "react-redux";
+import { useGetCurrentUserQuery } from "@/features/users/userApiSlice";
+import { useGetNotificationsQuery } from "@/features/notifications/notificationApiSlice";
+import { currentUser as mockUser } from "@/data/mock";
 import {
   Bell,
   Droplet,
@@ -25,21 +27,33 @@ const items = [
   { to: "/requests", label: "My Requests", icon: FileText },
   { to: "/donation-history", label: "Donation History", icon: HeartHandshake },
   { section: "Account" },
-  { to: "/notifications", label: "Notifications", icon: Bell, badge: 2 },
+  { to: "/notifications", label: "Notifications", icon: Bell },
   { to: "/profile", label: "Profile", icon: User },
   { to: "/settings", label: "Settings", icon: Settings },
 ];
 
 export default function UserLayout({ children }) {
   const [open, setOpen] = useState(false);
-  const { isDonor } = useSelector(state => state.user);
+  const { data: response } = useGetCurrentUserQuery();
+  const currentUser = response?.data || null;
+  const isDonor = currentUser?.isDonor;
+
+  const { data: notifResponse } = useGetNotificationsQuery(undefined, { skip: !response?.data });
+  const unreadCount = (notifResponse?.data || []).filter(n => !n.isRead).length;
+
+  const dynamicItems = items.map(item => {
+    if (item.to === '/notifications') {
+      return { ...item, badge: unreadCount > 0 ? unreadCount : undefined };
+    }
+    return item;
+  });
 
   return (
-    <div className="min-h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background">
       <Navbar onMenu={() => setOpen(true)} />
-      <div className="mx-auto flex w-full max-w-[1400px]">
+      <div className="mx-auto flex w-full max-w-[1400px] 2xl:max-w-[2560px]">
         <Sidebar
-          items={items}
+          items={dynamicItems}
           open={open}
           onClose={() => setOpen(false)}
           footer={
