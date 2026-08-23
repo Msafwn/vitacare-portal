@@ -21,6 +21,10 @@ function DonorDetails() {
   const { data: response, isLoading } = useGetDonorByIdQuery(donorId);
   const donor = response?.data;
 
+  const lastDonationTime = donor?.lastDonationDate ? new Date(donor.lastDonationDate) : null;
+  const isRecentlyDonated = lastDonationTime ? (new Date() - lastDonationTime) / (1000 * 3600 * 24) < 90 : false;
+  const nextEligibleDate = lastDonationTime ? new Date(lastDonationTime.getTime() + 90 * 24 * 60 * 60 * 1000) : null;
+
   if (isLoading) {
     return (
       <UserLayout>
@@ -50,7 +54,7 @@ function DonorDetails() {
         title="Donor details"
         description="Contact this donor only for genuine, verified requirements."
         actions={
-          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} disabled={donor.status !== "available"}>
+          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} disabled={donor.status !== "available" || isRecentlyDonated}>
             Send request
           </Button>
         }
@@ -92,6 +96,12 @@ function DonorDetails() {
               </div>
             ))}
           </div>
+          {isRecentlyDonated && (
+            <div className="mt-5 rounded-xl bg-warning/10 p-4 text-warning border border-warning/20 text-sm font-medium flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-warning animate-pulse shrink-0" />
+              Recently Donated. This donor is eligible to donate again on {nextEligibleDate ? formatDate(nextEligibleDate) : ''}.
+            </div>
+          )}
         </Card>
 
         <Card>
@@ -129,7 +139,7 @@ function DonorDetails() {
             </div>
           )}
 
-          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} variant="soft" className="mt-5 w-full" disabled={donor.status !== "available"}>
+          <Button onClick={() => navigate(`/requests/new?donorId=VITA-${donor.id}-SECURE&donorName=${encodeURIComponent(donor.name)}`)} variant="soft" className="mt-5 w-full" disabled={donor.status !== "available" || isRecentlyDonated}>
             Send request
           </Button>
         </Card>

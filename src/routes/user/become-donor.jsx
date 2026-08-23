@@ -28,7 +28,16 @@ const donorSchema = z.object({
   dob: z.string().min(1, "Date of birth is required"),
   gender: z.string().min(1, "Gender is required"),
   bloodGroup: z.string().min(1, "Blood group is required"),
-  lastDonation: z.string().optional(),
+  lastDonation: z.string().optional().refine((val) => {
+    if (!val) return true;
+    const lastDate = new Date(val);
+    const today = new Date();
+    const diffInTime = today.getTime() - lastDate.getTime();
+    const diffInDays = diffInTime / (1000 * 3600 * 24);
+    return diffInDays >= 90;
+  }, {
+    message: "Last donation date must be at least 3 months (90 days) ago."
+  }),
   availability: z.string().min(1, "Availability is required"),
   city: z.string().min(1, "City is required"),
   area: z.string().min(1, "Area is required"),
@@ -266,7 +275,7 @@ export default function BecomeDonor() {
                       {...register("bloodGroup")}
                     />
                   </Field>
-                  <Field label="Last Donation Date">
+                  <Field label="Last Donation Date" error={errors.lastDonation?.message}>
                     <Input type="date" {...register("lastDonation")} />
                   </Field>
                   <Field label="Donor Availability" error={errors.availability?.message} required className="sm:col-span-2">
