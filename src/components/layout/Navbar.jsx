@@ -32,6 +32,8 @@ export default function Navbar({ onMenu, admin = false, links = [], showSearch =
     } catch (err) {
       console.error("Logout failed", err);
     }
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
     navigate(admin ? "/admin/login" : "/login");
   };
   return (

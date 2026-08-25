@@ -52,12 +52,20 @@ function Login() {
 
   async function onSubmit(data) {
     try {
-      await login({ 
+      const response = await login({ 
         email: data.email, 
         password: data.password, 
         rememberMe: data.rememberMe 
       }).unwrap();
       
+      // Store tokens in localStorage for authorization fallback (especially mobile browsers blocking cookies)
+      if (response?.data?.accessToken) {
+        localStorage.setItem("accessToken", response.data.accessToken);
+      }
+      if (response?.data?.refreshToken) {
+        localStorage.setItem("refreshToken", response.data.refreshToken);
+      }
+
       // Handle "Remember me" on frontend
       if (data.rememberMe) {
         localStorage.setItem("rememberedEmail", data.email);

@@ -1,9 +1,25 @@
 import axios from 'axios';
 
+const baseURL = import.meta.env.VITE_API_URL || '/api/v1';
+
 const axiosInstance = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || '/api/v1',
+  baseURL,
   withCredentials: true, // Crucial for sending/receiving HTTP-Only cookies across endpoints
 });
+
+// Request interceptor to attach JWT token
+axiosInstance.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem('accessToken');
+    if (token) {
+      config.headers['Authorization'] = `Bearer ${token}`;
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
 
 // Flag to prevent infinite retry loops if refresh fails
 let isRefreshing = false;
@@ -53,8 +69,18 @@ axiosInstance.interceptors.response.use(
       isRefreshing = true;
 
       try {
-        await axios.post('/api/v1/auth/refresh-token', {}, { withCredentials: true });
+        const storedRefreshToken = localStorage.getItem("refreshToken");
+        const refreshResponse = await axios.post(
+          `${baseURL}/auth/refresh-token`,
+          { refreshToken: storedRefreshToken },
+          { withCredentials: true }
+        );
         
+        const newAccessToken = refreshResponse.data?.data?.accessToken;
+        if (newAccessToken) {
+          localStorage.setItem("accessToken", newAccessToken);
+        }
+
         isRefreshing = false;
         processQueue(null);
         
@@ -63,6 +89,10 @@ axiosInstance.interceptors.response.use(
         isRefreshing = false;
         processQueue(err, null);
         
+        // Clear local storage tokens on authentication failure
+        localStorage.removeItem("accessToken");
+        localStorage.removeItem("refreshToken");
+
         // If refresh token fails, redirect to login (unless we were just checking profile)
         if (!originalRequest.url.includes('/auth/profile') && window.location.pathname !== '/login') {
           window.location.href = '/login';
