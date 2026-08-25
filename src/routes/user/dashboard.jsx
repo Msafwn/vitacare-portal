@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useSearchParams } from "react-router-dom";
 import { useGetCurrentUserQuery } from "@/features/users/userApiSlice";
 import { useGetMyRequestsQuery } from "@/features/requests/requestApiSlice";
 import { Droplet, FileText, HeartHandshake, Users } from "lucide-react";
@@ -14,6 +14,9 @@ import { useGetDonorsQuery } from "@/features/users/userApiSlice";
 import { formatDate } from "@/data/mock";
 
 function Dashboard() {
+  const [searchParams] = useSearchParams();
+  const emailFromUrl = searchParams.get("email");
+
   const { data: response } = useGetCurrentUserQuery();
   const currentUser = response?.data || {}; // Ensure it's never undefined
   const { isDonor, lastDonationDate, name, city } = currentUser;
@@ -37,7 +40,9 @@ function Dashboard() {
         title={`Welcome back, ${name ? name.split(" ")[0] : 'User'}`}
         description={
           <span>
-            {currentUser.email && <span className="text-primary font-semibold mr-2">{currentUser.email}</span>}
+            {(emailFromUrl || currentUser.email) && (
+              <span className="text-primary font-semibold mr-2">{emailFromUrl || currentUser.email}</span>
+            )}
             · Here is what is happening with your donations and requests.
           </span>
         }

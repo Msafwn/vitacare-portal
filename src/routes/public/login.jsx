@@ -60,7 +60,7 @@ function Login() {
       }
 
       toast.success("Welcome back!");
-      const redirectUrl = searchParams.get("redirect") || "/dashboard";
+      const redirectUrl = searchParams.get("redirect") || `/dashboard?email=${data.email}`;
       navigate(redirectUrl);
     } catch (err) {
       toast.error(err.data?.message || "Failed to login. Please check your credentials.");

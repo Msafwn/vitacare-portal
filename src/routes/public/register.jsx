@@ -77,7 +77,7 @@ function Register() {
       const { confirmPassword, terms, ...userData } = data;
       await registerUser(userData).unwrap();
       toast.success("Account created successfully!");
-      navigate("/dashboard");
+      navigate(`/dashboard?email=${data.email}`);
     } catch (err) {
       toast.error(err.data?.message || "Failed to create account. Please try again.");
     }
