@@ -12,7 +12,7 @@ export default function Footer() {
       links: [
         { label: "Find donors", to: currentUser ? "/find-donors" : "/login?redirect=/find-donors" },
         { label: "Create request", to: currentUser ? "/requests/new" : "/login?redirect=/requests/new" },
-        { label: "Dashboard", to: currentUser ? "/dashboard" : "/login?redirect=/dashboard" },
+        { label: "Dashboard", to: currentUser ? `/dashboard?email=${encodeURIComponent(currentUser.email)}` : "/login?redirect=/dashboard" },
       ],
     },
     {

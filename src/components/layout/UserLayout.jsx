@@ -42,10 +42,15 @@ export default function UserLayout({ children }) {
   const unreadCount = (notifResponse?.data || []).filter(n => !n.isRead).length;
 
   const dynamicItems = items.map(item => {
-    if (item.to === '/notifications') {
-      return { ...item, badge: unreadCount > 0 ? unreadCount : undefined };
+    let toUrl = item.to;
+    if (item.to === "/dashboard" && currentUser?.email) {
+      toUrl = `/dashboard?email=${encodeURIComponent(currentUser.email)}`;
     }
-    return item;
+
+    if (item.to === "/notifications") {
+      return { ...item, to: toUrl, badge: unreadCount > 0 ? unreadCount : undefined };
+    }
+    return toUrl ? { ...item, to: toUrl } : item;
   });
 
   return (

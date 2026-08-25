@@ -33,7 +33,7 @@ export default function Sidebar({ items, open, onClose, footer }) {
             onClick={onClose}
             className={cn(
               "flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors",
-              pathname === item.to || (item.match && pathname.startsWith(item.match))
+              pathname === item.to.split('?')[0] || (item.match && pathname.startsWith(item.match))
                 ? "bg-sidebar-accent text-sidebar-accent-foreground"
                 : "text-muted-foreground hover:bg-muted hover:text-foreground",
             )}
