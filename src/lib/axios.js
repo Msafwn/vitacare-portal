@@ -25,10 +25,16 @@ axiosInstance.interceptors.response.use(
   async (error) => {
     const originalRequest = error.config;
 
-    // Force logout on 403 Forbidden (e.g. suspended user or unauthorized admin access)
+    // Force logout on 403 Forbidden (e.g. suspended user or unverified/suspended access)
     if (error.response?.status === 403) {
+      const message = error.response?.data?.message || '';
       const isAdminPage = window.location.pathname.startsWith('/admin');
-      window.location.href = isAdminPage ? '/admin/login?error=suspended' : '/login?error=suspended';
+      
+      if (message.toLowerCase().includes('verified') || message.toLowerCase().includes('verify')) {
+        window.location.href = '/login?error=unverified';
+      } else {
+        window.location.href = isAdminPage ? '/admin/login?error=suspended' : '/login?error=suspended';
+      }
       return Promise.reject(error);
     }
 

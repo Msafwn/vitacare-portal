@@ -76,8 +76,8 @@ function Register() {
       // Remove confirmPassword and terms before sending to API
       const { confirmPassword, terms, ...userData } = data;
       await registerUser(userData).unwrap();
-      toast.success("Account created successfully!");
-      navigate(`/dashboard?email=${data.email}`);
+      toast.success("Account created successfully! Please check your email to activate your account.");
+      navigate("/login");
     } catch (err) {
       toast.error(err.data?.message || "Failed to create account. Please try again.");
     }

@@ -44,6 +44,12 @@ function Login() {
     }
   }, [setValue]);
 
+  useEffect(() => {
+    if (searchParams.get("verified") === "true") {
+      toast.success("Email verified successfully! You can now log in.");
+    }
+  }, [searchParams]);
+
   async function onSubmit(data) {
     try {
       await login({ 
@@ -127,6 +133,12 @@ function Login() {
           {searchParams.get("error") === "suspended" && (
             <div className="mb-6 rounded-xl border border-destructive/20 bg-destructive/5 p-4 text-sm text-primary font-medium text-center">
               Your account has been suspended by the administrator. Please contact support.
+            </div>
+          )}
+
+          {searchParams.get("error") === "unverified" && (
+            <div className="mb-6 rounded-xl border border-amber-500/20 bg-amber-500/5 p-4 text-sm text-amber-600 font-medium text-center">
+              Your email is not verified. Please check your inbox for the activation link.
             </div>
           )}
           
