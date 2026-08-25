@@ -35,7 +35,12 @@ function Dashboard() {
     <UserLayout>
       <PageHeader
         title={`Welcome back, ${name ? name.split(" ")[0] : 'User'}`}
-        description="Here is what is happening with your donations and requests."
+        description={
+          <span>
+            {currentUser.email && <span className="text-primary font-semibold mr-2">{currentUser.email}</span>}
+            · Here is what is happening with your donations and requests.
+          </span>
+        }
         actions={
           <>
             <Button as="link" to="/requests/new">
