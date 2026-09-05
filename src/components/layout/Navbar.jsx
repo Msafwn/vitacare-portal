@@ -6,7 +6,6 @@ import Dropdown, { DropdownItem, DropdownLabel } from "../blood/Dropdown";
 import SearchBar from "../blood/SearchBar";
 import { useGetCurrentUserQuery, useLogoutMutation } from "@/features/users/userApiSlice";
 import { useGetNotificationsQuery } from "@/features/notifications/notificationApiSlice";
-import { currentUser as mockUser } from "@/data/mock";
 
 export default function Navbar({ onMenu, admin = false, links = [], showSearch = true, guest = false }) {
   const { data: response, isLoading } = useGetCurrentUserQuery();

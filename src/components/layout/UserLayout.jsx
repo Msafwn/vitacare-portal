@@ -2,7 +2,6 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useGetCurrentUserQuery } from "@/features/users/userApiSlice";
 import { useGetNotificationsQuery } from "@/features/notifications/notificationApiSlice";
-import { currentUser as mockUser } from "@/data/mock";
 import {
   Bell,
   Droplet,

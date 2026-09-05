@@ -52,12 +52,12 @@ function Login() {
 
   async function onSubmit(data) {
     try {
-      const response = await login({ 
-        email: data.email, 
-        password: data.password, 
-        rememberMe: data.rememberMe 
+      const response = await login({
+        email: data.email,
+        password: data.password,
+        rememberMe: data.rememberMe
       }).unwrap();
-      
+
       // Store tokens in localStorage for authorization fallback (especially mobile browsers blocking cookies)
       if (response?.data?.accessToken) {
         localStorage.setItem("accessToken", response.data.accessToken);
@@ -149,7 +149,7 @@ function Login() {
               Your email is not verified. Please check your inbox for the activation link.
             </div>
           )}
-          
+
           <form className="space-y-6" onSubmit={handleSubmit(onSubmit)}>
             <Field label="Email" error={errors.email?.message} required>
               <div className="relative">
@@ -159,15 +159,15 @@ function Login() {
             </Field>
             <Field label="Password" error={errors.password?.message} required>
               <div className="relative">
-                <Input 
-                  type={showPassword ? "text" : "password"} 
-                  placeholder="••••••••" 
-                  className="pl-10 pr-10" 
-                  {...register("password")} 
+                <Input
+                  type={showPassword ? "text" : "password"}
+                  placeholder="••••••••"
+                  className="pl-10 pr-10"
+                  {...register("password")}
                 />
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                <button 
-                  type="button" 
+                <button
+                  type="button"
                   onClick={() => setShowPassword(!showPassword)}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground transition-colors"
                 >
@@ -175,7 +175,7 @@ function Login() {
                 </button>
               </div>
             </Field>
-            
+
             <div className="flex items-center justify-between text-sm">
               <label className="flex items-center gap-2 font-medium text-muted-foreground">
                 <input type="checkbox" {...register("rememberMe")} className="h-4 w-4 rounded border-border accent-primary" />
@@ -185,12 +185,12 @@ function Login() {
                 Forgot Password?
               </Link>
             </div>
-            
+
             <Button type="submit" disabled={isLoading} className="w-full h-12 text-base font-semibold">
               {isLoading ? "Logging in..." : "Login"}
             </Button>
           </form>
-          
+
           <p className="mt-8 text-center text-sm font-medium text-muted-foreground">
             Don't have an account?{" "}
             <Link to="/register" className="font-semibold text-primary hover:underline">
