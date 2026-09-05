@@ -5,6 +5,7 @@ import { lazy, Suspense } from "react";
 const Index = lazy(() => import("./routes/public/index"));
 const Login = lazy(() => import("./routes/public/login"));
 const Register = lazy(() => import("./routes/public/register"));
+const Activate = lazy(() => import("./routes/public/activate"));
 const About = lazy(() => import("./routes/public/about"));
 const Contact = lazy(() => import("./routes/public/contact"));
 const ForgotPassword = lazy(() => import("./routes/public/forgot-password"));
@@ -59,6 +60,7 @@ function App() {
             <Route path="/" element={<Index />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
+            <Route path="/activate" element={<Activate />} />
             <Route path="/about" element={<About />} />
             <Route path="/contact" element={<Contact />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
