@@ -42,6 +42,7 @@ const AdminProfile = lazy(() => import("./routes/admin/profile"));
 const AdminMessages = lazy(() => import("./routes/admin/messages"));
 
 import { Toaster } from "@/components/blood/Toast";
+import AIChatbotWidget from "@/components/chat/AIChatbotWidget";
 
 const LoadingScreen = () => (
   <div className="flex h-screen w-screen items-center justify-center bg-background">
@@ -99,6 +100,8 @@ function App() {
             </Route>
           </Routes>
         </Suspense>
+        {/* Floating AI Blood Assistant Chatbot */}
+        <AIChatbotWidget />
       </BrowserRouter>
     </>
   );
