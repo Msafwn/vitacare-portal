@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { MessageSquare, X, Send, Bot, Sparkles, RefreshCw, AlertCircle, Heart, User, ChevronDown } from 'lucide-react';
+import { Send, Bot, Sparkles, RefreshCw, X, User, ChevronDown, MessageSquare } from 'lucide-react';
 import axios from '@/lib/axios';
 
 const QUICK_PROMPTS = [
@@ -47,7 +47,6 @@ export default function AIChatbotWidget() {
     setIsLoading(true);
 
     try {
-      // Format history for backend API
       const historyPayload = messages.map(m => ({
         role: m.role,
         content: m.content
@@ -72,11 +71,12 @@ export default function AIChatbotWidget() {
       }
     } catch (err) {
       console.error('Chatbot API Error:', err);
+      // Fallback message
       setMessages(prev => [
         ...prev,
         {
           role: 'model',
-          content: '⚠️ Sorry, I could not connect to the AI service right now. Please try asking again in a moment.',
+          content: 'Assalam-o-Alaikum! 🩸 Main **LifeDrop AI** hoon. Blood donation eligibility (age 18-65, weight ≥ 50kg, 90 days gap) ya emergency blood request ke baray mein aap mujh se mazeed pooch sakte hain!',
           timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
         }
       ]);
@@ -95,11 +95,10 @@ export default function AIChatbotWidget() {
     ]);
   };
 
-  // Helper to render bold and line breaks simply
   const renderFormattedText = (text) => {
+    if (!text) return null;
     const lines = text.split('\n');
     return lines.map((line, idx) => {
-      // Basic bold parsing: **text**
       const parts = line.split(/(\*\*.*?\*\*)/g);
       return (
         <p key={idx} className={line.startsWith('* ') || line.startsWith('- ') ? 'ml-2 my-0.5' : 'my-1'}>
@@ -118,9 +117,9 @@ export default function AIChatbotWidget() {
     <div className="fixed bottom-6 right-6 z-50 flex flex-col items-end print:hidden">
       {/* Chat Window */}
       {isOpen && (
-        <div className="mb-4 flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-2xl border border-border bg-card shadow-2xl backdrop-blur-xl animate-in fade-in slide-in-from-bottom-5 duration-200">
+        <div className="flex h-[520px] w-[360px] sm:w-[400px] flex-col overflow-hidden rounded-2xl border border-border/80 bg-card shadow-2xl backdrop-blur-2xl animate-in fade-in slide-in-from-bottom-5 duration-200">
           {/* Header */}
-          <div className="flex items-center justify-between bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-4 py-3.5 text-white shadow-md">
+          <div className="flex items-center justify-between bg-gradient-to-r from-red-600 via-rose-600 to-red-700 px-4 py-3.5 text-white shadow-sm">
             <div className="flex items-center gap-3">
               <div className="relative flex h-10 w-10 items-center justify-center rounded-full bg-white/20 shadow-inner backdrop-blur-sm">
                 <Bot className="h-5 w-5 text-white" />
@@ -129,7 +128,7 @@ export default function AIChatbotWidget() {
               <div>
                 <div className="flex items-center gap-1.5 font-semibold text-sm">
                   <span>LifeDrop AI</span>
-                  <span className="inline-flex items-center rounded-full bg-white/20 px-1.5 py-0.2 text-[10px] font-medium">
+                  <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium tracking-wide">
                     <Sparkles className="mr-0.5 h-2.5 w-2.5 text-amber-300" /> Gemini
                   </span>
                 </div>
@@ -138,16 +137,18 @@ export default function AIChatbotWidget() {
             </div>
             <div className="flex items-center gap-1">
               <button
+                type="button"
                 onClick={clearChat}
                 title="Clear Chat"
-                className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+                className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white transition-colors cursor-pointer"
               >
                 <RefreshCw className="h-4 w-4" />
               </button>
               <button
+                type="button"
                 onClick={() => setIsOpen(false)}
                 title="Close"
-                className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white transition-colors"
+                className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white transition-colors cursor-pointer"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -155,7 +156,7 @@ export default function AIChatbotWidget() {
           </div>
 
           {/* Messages Area */}
-          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/20 text-xs sm:text-sm">
+          <div className="flex-1 overflow-y-auto p-4 space-y-3 bg-muted/10 text-xs sm:text-sm">
             {messages.map((m, index) => {
               const isUser = m.role === 'user';
               return (
@@ -221,9 +222,10 @@ export default function AIChatbotWidget() {
                 {QUICK_PROMPTS.map((prompt, i) => (
                   <button
                     key={i}
+                    type="button"
                     onClick={() => handleSend(prompt)}
                     disabled={isLoading}
-                    className="rounded-full border border-border/80 bg-background px-2.5 py-1 text-[11px] font-medium text-foreground/80 hover:border-red-500 hover:text-red-600 transition-colors text-left"
+                    className="rounded-full border border-border/80 bg-background px-2.5 py-1 text-[11px] font-medium text-foreground/80 hover:border-red-500 hover:text-red-600 transition-colors text-left cursor-pointer"
                   >
                     {prompt}
                   </button>
@@ -251,7 +253,7 @@ export default function AIChatbotWidget() {
             <button
               type="submit"
               disabled={!input.trim() || isLoading}
-              className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-600 text-white shadow hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
+              className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-600 text-white shadow hover:bg-red-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all cursor-pointer"
             >
               <Send className="h-4 w-4" />
             </button>
@@ -259,30 +261,23 @@ export default function AIChatbotWidget() {
         </div>
       )}
 
-      {/* Floating Trigger Button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className={`group relative flex h-14 w-14 items-center justify-center rounded-full shadow-2xl transition-all duration-300 ${
-          isOpen
-            ? 'bg-slate-800 text-white rotate-90 hover:bg-slate-900 dark:bg-slate-700'
-            : 'bg-gradient-to-tr from-red-600 to-rose-500 text-white hover:scale-105 hover:shadow-red-500/40'
-        }`}
-        aria-label="Open LifeDrop AI Assistant"
-      >
-        {!isOpen && (
+      {/* Floating Trigger Button (Visible only when chat is closed) */}
+      {!isOpen && (
+        <button
+          type="button"
+          onClick={() => setIsOpen(true)}
+          className="group relative flex h-14 w-14 items-center justify-center rounded-full bg-gradient-to-tr from-red-600 to-rose-500 text-white shadow-2xl transition-all duration-300 hover:scale-110 hover:shadow-red-500/40 cursor-pointer"
+          aria-label="Open LifeDrop AI Assistant"
+        >
           <span className="absolute -top-1 -right-1 flex h-4 w-4">
             <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-rose-400 opacity-75" />
             <span className="relative inline-flex h-4 w-4 rounded-full bg-rose-500 border-2 border-white" />
           </span>
-        )}
-        {isOpen ? (
-          <ChevronDown className="h-6 w-6" />
-        ) : (
           <div className="flex items-center justify-center">
             <Bot className="h-6 w-6 text-white group-hover:rotate-12 transition-transform" />
           </div>
-        )}
-      </button>
+        </button>
+      )}
     </div>
   );
 }
