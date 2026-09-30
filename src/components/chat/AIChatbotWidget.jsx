@@ -128,9 +128,6 @@ export default function AIChatbotWidget() {
               <div>
                 <div className="flex items-center gap-1.5 font-semibold text-sm">
                   <span>LifeDrop AI</span>
-                  <span className="inline-flex items-center rounded-full bg-white/20 px-2 py-0.5 text-[10px] font-medium tracking-wide">
-                    <Sparkles className="mr-0.5 h-2.5 w-2.5 text-amber-300" /> Gemini
-                  </span>
                 </div>
                 <p className="text-[11px] text-white/80">Virtual Blood & Health Assistant</p>
               </div>
