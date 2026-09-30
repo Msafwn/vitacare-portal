@@ -1,6 +1,14 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, Sparkles, RefreshCw, X, User, ChevronDown, MessageSquare } from 'lucide-react';
+import { Send, Bot, RefreshCw, X, User } from 'lucide-react';
 import axios from '@/lib/axios';
+
+const STORAGE_KEY = 'lifedrop_ai_chat_history';
+
+const DEFAULT_WELCOME_MESSAGE = {
+  role: 'model',
+  content: 'Assalam-o-Alaikum! 🩸 I am **LifeDrop AI**, your virtual blood health assistant. Ask me anything about blood donation eligibility, compatibility, or how to get emergency blood!',
+  timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+};
 
 const QUICK_PROMPTS = [
   '🩺 Am I eligible to donate blood today?',
@@ -11,13 +19,21 @@ const QUICK_PROMPTS = [
 
 export default function AIChatbotWidget() {
   const [isOpen, setIsOpen] = useState(false);
-  const [messages, setMessages] = useState([
-    {
-      role: 'model',
-      content: 'Assalam-o-Alaikum! 🩸 I am **LifeDrop AI**, your virtual blood health assistant. Ask me anything about blood donation eligibility, compatibility, or how to get emergency blood!',
-      timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+  const [messages, setMessages] = useState(() => {
+    try {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) {
+          return parsed;
+        }
+      }
+    } catch (e) {
+      console.warn('Could not load chat history from localStorage:', e);
     }
-  ]);
+    return [DEFAULT_WELCOME_MESSAGE];
+  });
+  
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
@@ -26,11 +42,23 @@ export default function AIChatbotWidget() {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   };
 
+  // Auto-scroll on new message or open
   useEffect(() => {
     if (isOpen) {
       scrollToBottom();
     }
   }, [messages, isOpen]);
+
+  // Persist chat history to localStorage on update
+  useEffect(() => {
+    try {
+      if (messages && messages.length > 0) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
+      }
+    } catch (e) {
+      console.warn('Could not save chat history to localStorage:', e);
+    }
+  }, [messages]);
 
   const handleSend = async (textToSend = null) => {
     const messageText = (textToSend || input).trim();
@@ -71,7 +99,6 @@ export default function AIChatbotWidget() {
       }
     } catch (err) {
       console.error('Chatbot API Error:', err);
-      // Fallback message
       setMessages(prev => [
         ...prev,
         {
@@ -86,6 +113,11 @@ export default function AIChatbotWidget() {
   };
 
   const clearChat = () => {
+    try {
+      localStorage.removeItem(STORAGE_KEY);
+    } catch (e) {
+      // ignore
+    }
     setMessages([
       {
         role: 'model',
@@ -136,7 +168,7 @@ export default function AIChatbotWidget() {
               <button
                 type="button"
                 onClick={clearChat}
-                title="Clear Chat"
+                title="Clear Chat History"
                 className="rounded-lg p-1.5 text-white/80 hover:bg-white/20 hover:text-white transition-colors cursor-pointer"
               >
                 <RefreshCw className="h-4 w-4" />
