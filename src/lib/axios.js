@@ -4,6 +4,7 @@ const baseURL = import.meta.env.VITE_API_URL || '/api/v1';
 
 const axiosInstance = axios.create({
   baseURL,
+  timeout: 15000, // 15 seconds global request timeout
   withCredentials: true, // Crucial for sending/receiving HTTP-Only cookies across endpoints
 });
 
@@ -39,6 +40,21 @@ const processQueue = (error, token = null) => {
 axiosInstance.interceptors.response.use(
   (response) => response,
   async (error) => {
+    // 1. Gracefully handle AbortController / Cancellation
+    if (axios.isCancel(error) || error.code === 'ERR_CANCELED' || error.name === 'CanceledError') {
+      return Promise.reject({ ...error, isCanceled: true, message: 'Request was cancelled by user.' });
+    }
+
+    // 2. Handle Request Timeout explicitly (ECONNABORTED)
+    if (error.code === 'ECONNABORTED' || error.message?.toLowerCase().includes('timeout')) {
+      console.warn('⏱️ [Network Timeout]: Request took longer than 15s to complete.');
+      return Promise.reject({
+        ...error,
+        isTimeout: true,
+        message: 'Request timed out (server took longer than 15s to respond). Please try again.'
+      });
+    }
+
     const originalRequest = error.config;
 
     // Force logout on 403 Forbidden (e.g. suspended user or unverified/suspended access)

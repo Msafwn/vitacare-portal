@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, Bot, RefreshCw, X, User } from 'lucide-react';
+import { Send, Bot, RefreshCw, X, User, Square } from 'lucide-react';
 import axios from '@/lib/axios';
 
 const STORAGE_KEY = 'lifedrop_ai_chat_history';
@@ -37,6 +37,7 @@ export default function AIChatbotWidget() {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const messagesEndRef = useRef(null);
+  const abortControllerRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -49,20 +50,29 @@ export default function AIChatbotWidget() {
     }
   }, [messages, isOpen]);
 
-  // Persist chat history to localStorage on update
+  // Cancel any active request on unmount
   useEffect(() => {
-    try {
-      if (messages && messages.length > 0) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(messages));
-      }
-    } catch (e) {
-      console.warn('Could not save chat history to localStorage:', e);
+    return () => {
+      abortControllerRef.current?.abort();
+    };
+  }, []);
+
+  const stopGenerating = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+      setIsLoading(false);
     }
-  }, [messages]);
+  };
 
   const handleSend = async (textToSend = null) => {
     const messageText = (textToSend || input).trim();
     if (!messageText || isLoading) return;
+
+    // Abort any previous pending request
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    abortControllerRef.current = new AbortController();
 
     const userMessage = {
       role: 'user',
@@ -83,6 +93,8 @@ export default function AIChatbotWidget() {
       const res = await axios.post('/ai/chat', {
         message: messageText,
         history: historyPayload
+      }, {
+        signal: abortControllerRef.current.signal
       });
 
       if (res.data && res.data.success && res.data.data) {
@@ -98,6 +110,12 @@ export default function AIChatbotWidget() {
         throw new Error(res.data?.message || 'Failed to get response');
       }
     } catch (err) {
+      // If request was canceled by user, do not show error message
+      if (err?.isCanceled || err?.name === 'CanceledError' || axios.isCancel(err)) {
+        console.log('AI response generation stopped by user via AbortController');
+        return;
+      }
+
       console.error('Chatbot API Error:', err);
       setMessages(prev => [
         ...prev,
@@ -113,6 +131,7 @@ export default function AIChatbotWidget() {
   };
 
   const clearChat = () => {
+    stopGenerating();
     try {
       localStorage.removeItem(STORAGE_KEY);
     } catch (e) {
@@ -226,18 +245,29 @@ export default function AIChatbotWidget() {
             })}
 
             {isLoading && (
-              <div className="flex items-center gap-2 text-muted-foreground">
-                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
-                  <Bot className="h-3.5 w-3.5" />
-                </div>
-                <div className="rounded-2xl rounded-bl-xs border border-border bg-card px-4 py-2.5 shadow-sm">
-                  <div className="flex items-center gap-1.5">
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500 [animation-delay:-0.3s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500 [animation-delay:-0.15s]" />
-                    <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500" />
-                    <span className="ml-1 text-[11px] font-medium text-muted-foreground">LifeDrop AI thinking...</span>
+              <div className="flex items-center justify-between gap-2 text-muted-foreground">
+                <div className="flex items-center gap-2">
+                  <div className="flex h-7 w-7 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-950/60 dark:text-red-400">
+                    <Bot className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="rounded-2xl rounded-bl-xs border border-border bg-card px-4 py-2.5 shadow-sm">
+                    <div className="flex items-center gap-1.5">
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500 [animation-delay:-0.3s]" />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500 [animation-delay:-0.15s]" />
+                      <span className="h-1.5 w-1.5 animate-bounce rounded-full bg-red-500" />
+                      <span className="ml-1 text-[11px] font-medium text-muted-foreground">LifeDrop AI thinking...</span>
+                    </div>
                   </div>
                 </div>
+                <button
+                  type="button"
+                  onClick={stopGenerating}
+                  title="Stop generating (Abort request)"
+                  className="flex items-center gap-1 text-[11px] font-medium text-red-600 hover:text-red-700 bg-red-50 dark:bg-red-950/40 px-2 py-1 rounded-lg border border-red-200 dark:border-red-900/40 transition-colors cursor-pointer"
+                >
+                  <Square className="h-3 w-3 fill-current" />
+                  Stop
+                </button>
               </div>
             )}
             <div ref={messagesEndRef} />
